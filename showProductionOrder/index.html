@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>showProductionOrder</title>
+    <link rel="icon" type="image/x-icon" href="https://s4h.rp.metalsxp.com/sap/public/bc/ur/Login/assets/favicon.ico">
+
+    <!-- UI5 Web Components - Import Map Configuration -->
+    <script type="importmap">
+    {
+        "imports": {
+            "@ui5/webcomponents-base/jsx-runtime": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-base@2.14.0/dist/jsx-runtime.js",
+            "@ui5/webcomponents-base/jsx-dev-runtime": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-base@2.14.0/dist/jsx-dev-runtime.js",
+            "lit-html": "https://cdn.jsdelivr.net/npm/lit-html@3.1.0/lit-html.js",
+            "lit-html/": "https://cdn.jsdelivr.net/npm/lit-html@3.1.0/",
+            "@ui5/webcomponents/": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents@2.14.0/",
+            "@ui5/webcomponents-fiori/": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-fiori@2.14.0/",
+            "@ui5/webcomponents-base/": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-base@2.14.0/",
+            "@ui5/webcomponents-theming/": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-theming@2.14.0/",
+            "@ui5/webcomponents-icons/": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-icons@2.14.0/",
+            "@ui5/webcomponents-localization/": "https://cdn.jsdelivr.net/npm/@ui5/webcomponents-localization@2.14.0/"
+        }
+    }
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "72", "72full", Arial, Helvetica, sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        .content-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .form-section {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+        }
+
+        .form-row {
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .button-row {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        ui5-busy-indicator {
+            display: block;
+            margin-left: 1rem;
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #e5f0f5;
+            border-left: 4px solid #0a6ed1;
+            border-radius: 0.25rem;
+            display: none;
+        }
+
+        .result-section.visible {
+            display: block;
+        }
+
+        ui5-input {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        #loadingDialog::part(content) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            min-width: 200px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Initial Loading Overlay -->
+    <div id="initialLoading"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background-color: #f7f7f7; z-index: 9999;">
+        <div style="text-align: center;">
+            <div style="font-size: 1.5rem; color: #0a6ed1; margin-bottom: 1rem;">loading...</div>
+            <div style="font-size: 0.875rem; color: #6a6d70;">Please wait while the application loads</div>
+        </div>
+    </div>
+
+    <!-- Main Content (hidden initially) -->
+    <div id="mainContent" style="display: none;">
+        <!-- SAP Fiori Shell Bar -->
+        <ui5-shellbar primary-title="showProductionOrder" show-notifications show-product-switch role="banner"
+            aria-label="Application header">
+        </ui5-shellbar>
+
+        <!-- Loading Dialog Overlay -->
+        <ui5-dialog id="loadingDialog" role="dialog" aria-label="Loading production order" aria-modal="true">
+            <ui5-busy-indicator active size="L" text-placement="Bottom" aria-label="Loading indicator">
+            </ui5-busy-indicator>
+        </ui5-dialog>
+
+        <!-- Main Content -->
+        <div class="content-container">
+            <div class="form-section">
+                <div class="form-row">
+                    <ui5-label for="salesOrderInput" required show-colon>Sales Order</ui5-label>
+                    <ui5-input id="salesOrderInput" name="salesOrder" type="Number"
+                        placeholder="Enter sales order number" aria-label="Sales Order Number" value="">
+                        <div slot="valueStateMessage">Sales order number is required</div>
+                    </ui5-input>
+                </div>
+
+                <div class="button-row">
+                    <ui5-button id="showProductionOrderBtn" design="Emphasized"
+                        aria-label="Show production order">Show Production Order</ui5-button>
+                    <ui5-busy-indicator id="loadingIndicator" size="S" text-placement="Bottom"></ui5-busy-indicator>
+                </div>
+
+                <div id="resultSection" class="result-section">
+                    <ui5-text id="productionOrderText" role="status" aria-live="polite">Production Order:
+                        9000356</ui5-text>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Main Content -->
+
+    <!-- Import UI5 Web Components -->
+    <script type="module">
+        // Import Assets for themes, icons, and i18n support (CDN-compatible fetch versions)
+        import "@ui5/webcomponents/dist/Assets-fetch.js";
+        import "@ui5/webcomponents-fiori/dist/Assets-fetch.js";
+        import "@ui5/webcomponents-icons/dist/AllIcons-fetch.js";
+
+        // Import required UI5 components
+        import "@ui5/webcomponents-fiori/dist/ShellBar.js";
+        import "@ui5/webcomponents/dist/Button.js";
+        import "@ui5/webcomponents/dist/Input.js";
+        import "@ui5/webcomponents/dist/Label.js";
+        import "@ui5/webcomponents/dist/Text.js";
+        import "@ui5/webcomponents/dist/BusyIndicator.js";
+        import "@ui5/webcomponents/dist/Dialog.js";
+        import "@ui5/webcomponents-base/dist/features/F6Navigation.js"; // For ShellBar keyboard navigation
+
+        // Wait for components to be fully defined
+        await Promise.all([
+            customElements.whenDefined('ui5-shellbar'),
+            customElements.whenDefined('ui5-button'),
+            customElements.whenDefined('ui5-input'),
+            customElements.whenDefined('ui5-label'),
+            customElements.whenDefined('ui5-text'),
+            customElements.whenDefined('ui5-busy-indicator'),
+            customElements.whenDefined('ui5-dialog')
+        ]);
+
+        // Hide loading overlay and show main content
+        document.getElementById('initialLoading').style.display = 'none';
+        document.getElementById('mainContent').style.display = 'block';
+
+        // Event handlers
+        const showButton = document.getElementById('showProductionOrderBtn');
+        const salesOrderInput = document.getElementById('salesOrderInput');
+        const resultSection = document.getElementById('resultSection');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const loadingDialog = document.getElementById('loadingDialog');
+        const productionOrderText = document.getElementById('productionOrderText');
+
+        showButton.addEventListener('click', function () {
+            const salesOrderValue = salesOrderInput.value.trim();
+
+            // Validate input
+            if (salesOrderValue === '') {
+                // Show error state
+                salesOrderInput.setAttribute('value-state', 'Negative');
+                // Hide production order and close dialog if showing
+                resultSection.classList.remove('visible');
+                loadingDialog.open = false;
+                return;
+            }
+
+            // Clear error state if previously set
+            salesOrderInput.setAttribute('value-state', 'None');
+
+            // Clear the production order number (show placeholder)
+            productionOrderText.textContent = 'Production Order:';
+
+            // Show loading dialog overlay
+            loadingDialog.open = true;
+
+            // Show production order with number after 1 second
+            setTimeout(() => {
+                resultSection.classList.add('visible');
+                productionOrderText.textContent = 'Production Order: 9000356';
+                loadingDialog.open = false;
+            }, 1000);
+        });
+
+        // Restrict to numbers only and clear error when user starts typing
+        salesOrderInput.addEventListener('ui5-input', function (event) {
+            // Filter out non-numeric characters
+            const value = event.target.value.replace(/[^\d]/g, '');
+            event.target.value = value;
+
+            // Clear error state when input has value
+            if (value !== '') {
+                salesOrderInput.setAttribute('value-state', 'None');
+            }
+        });
+
+        // Allow Enter key to submit
+        salesOrderInput.addEventListener('keypress', function (event) {
+            if (event.key === 'Enter' && salesOrderInput.value.trim() !== '') {
+                showButton.click();
+            }
+        });
+    </script>
+</body>
+
+</html>
