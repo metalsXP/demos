@@ -13,7 +13,7 @@ The password is checked in the browser against a SHA-256 hash (not stored in pla
 
 ## Local Testing
 
-Import maps and `crypto.subtle` both require a secure context, so open this via a local server, not `file://`.
+`crypto.subtle` (Web Crypto API) requires a secure context, so open this via a local server, not `file://`.
 
 ```bash
 npx serve
