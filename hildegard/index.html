@@ -344,6 +344,7 @@
     <div class="navlinks">
       <a href="#problem">Problem</a>
       <a href="#features">Funktionen</a>
+      <a href="#livedemo">Live-Demo</a>
       <a href="#trust">Datensouveränität</a>
       <a href="#roadmap">Roadmap</a>
       <a href="#pricing">Angebot</a>
@@ -439,6 +440,93 @@
       <div class="feat reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 .649-.936l7-2.625a1 1 0 0 1 .702 0l7 2.625A1 1 0 0 1 20 6Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>SSO / OIDC</h3><p>Anmeldung über Ihr bestehendes Microsoft Entra ID — keine separaten Passwörter, keine Schatten-Accounts.</p><div class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px;margin-right:5px;vertical-align:-1px"><path d="M20 6 9 17l-5-5"/></svg>VERFÜGBAR</div></div>
       <div class="feat reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div><h3>Deployment bei Ihnen</h3><p>Läuft in Ihrem Kubernetes-Cluster — On-Premise, Azure oder SAP BTP Kyma. Sie behalten die Kontrolle.</p><div class="tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px;margin-right:5px;vertical-align:-1px"><path d="M20 6 9 17l-5-5"/></svg>VERFÜGBAR</div></div>
     </div>
+  </div>
+</section>
+
+<!-- LIVE-DEMO -->
+<style>
+  #livedemo{overflow:hidden}
+  #livedemo h2 .hl{color:var(--ds-secondary)}
+  #livedemo .dt-list{list-style:none;margin:20px 0 26px;display:flex;flex-direction:column;gap:10px}
+  #livedemo .dt-list li{display:flex;align-items:center;gap:10px;font-size:.98rem;color:#1d2d3e;font-weight:500}
+  #livedemo .dt-list li svg{width:18px;height:18px;color:var(--ds-success-title,#A1B977);flex-shrink:0}
+  #livedemo .dt-note{margin-top:16px;font-size:.8rem;color:#7E777C}
+  /* klickbarer Browser-Teaser */
+  .dt-frame{display:block;text-decoration:none;background:#fff;border-radius:14px;overflow:hidden;
+    border:1px solid #dfe4e9;box-shadow:0 24px 55px rgba(21,35,49,.22),0 2px 8px rgba(21,35,49,.10);
+    transition:transform .25s ease,box-shadow .25s ease}
+  .dt-frame:hover{transform:translateY(-6px);box-shadow:0 34px 70px rgba(21,35,49,.30),0 3px 10px rgba(21,35,49,.14)}
+  .dt-chrome{background:#e9ecef;display:flex;align-items:center;gap:9px;padding:9px 12px;border-bottom:1px solid #dce0e4}
+  .dt-chrome .dots{display:flex;gap:6px}
+  .dt-chrome .dots i{width:10px;height:10px;border-radius:50%}
+  .dt-chrome .dots i:nth-child(1){background:#ff5f57}.dt-chrome .dots i:nth-child(2){background:#febc2e}.dt-chrome .dots i:nth-child(3){background:#28c840}
+  .dt-chrome .url{flex:1;background:#fff;border:1px solid #d5dade;border-radius:6px;font-size:.68rem;color:#5b6b7a;padding:5px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .dt-chrome .exts{display:flex;align-items:center;gap:3px}
+  .dt-chrome .pin{width:24px;height:24px;border-radius:5px;background:#e3effd;display:flex;align-items:center;justify-content:center}
+  .dt-chrome .pin svg{width:15px;height:15px;fill:var(--ds-primary)}
+  .dt-chrome .puz{width:22px;height:22px;color:#5b6b7a}.dt-chrome .puz svg{width:15px;height:15px}
+  .dt-body{position:relative;background:linear-gradient(170deg,#f5f6f7,#e8edf2);padding:16px 16px 20px;min-height:210px}
+  .dt-toolbar{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:2px;background:#ffffffdd;
+    border-radius:3px;box-shadow:rgba(0,0,0,.1) 0 4px 6px;padding:3px}
+  .dt-toolbar span{width:22px;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+  .dt-toolbar span i{width:13px;height:13px;background:#3a3a3a;border-radius:2px}
+  .dt-toolbar span.rec i{width:11px;height:11px;border-radius:50%;background:var(--ds-primary)}
+  .dt-toolbar span.grip i{width:11px;height:14px;background:#888;-webkit-mask:radial-gradient(circle,#000 1.1px,transparent 1.2px) 0 0/5px 5px;mask:radial-gradient(circle,#000 1.1px,transparent 1.2px) 0 0/5px 5px}
+  .dt-rows{margin-top:46px;background:#fff;border:1px solid #e4e7ea;border-radius:8px;overflow:hidden}
+  .dt-rows .r{display:grid;grid-template-columns:1fr 1.3fr .8fr;gap:8px;padding:9px 12px;border-bottom:1px solid #eef1f4;font-size:.72rem;color:#1d2d3e}
+  .dt-rows .r:last-child{border-bottom:none}
+  .dt-rows .r b{color:#0a6ed1;font-weight:600}
+  .dt-rows .r.hit{position:relative;background:#6fa8dc22}
+  .dt-rows .r.hit::before{content:"";position:absolute;inset:0;background:#6fa8dc7f;outline:0}
+  .dt-rows .r.hit>*{position:relative;z-index:1}
+  .dt-tip{position:absolute;right:16px;top:120px;background:#fff;border-radius:6px;box-shadow:0 .5rem 1.2rem rgba(0,0,0,.28);
+    font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10.5px;color:#333;padding:5px 8px;backdrop-filter:blur(5px)}
+  .dt-play{margin-top:14px;display:inline-flex;align-items:center;gap:8px;background:var(--ds-primary);color:#fff;
+    font-weight:700;font-size:.82rem;padding:9px 18px;border-radius:999px}
+  .dt-play svg{width:13px;height:13px}
+</style>
+<section id="livedemo">
+  <div class="wrap market-grid">
+    <div class="reveal">
+      <span class="eyebrow" style="color:var(--ds-secondary)">Interaktive Live-Demo</span>
+      <h2>Warten Sie nicht — <span class="hl">testen Sie den pulseXP Recorder jetzt.</span></h2>
+      <p class="lead">Keine Anmeldung, kein Termin: eine nachgebaute SAP-Fiori-Oberfläche direkt im Browser. Nehmen Sie einen echten Prozess auf, spielen Sie ihn ab — und sehen Sie, wie der Recorder eine Zielzeile <b>trotz Lazy Loading</b> stabil wiederfindet.</p>
+      <ul class="dt-list">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Die echte Overlay-Toolbar wie im Produkt — Record, Pick, Assert</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Lazy-Loading-Tabelle — der Härtefall für jeden Recorder</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Von Aufnahme zu Replay in wenigen Sekunden</li>
+      </ul>
+      <div class="hero-btns">
+        <a href="demo.html" class="btn btn-primary"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="width:15px;height:15px;margin-right:7px;vertical-align:-2px"><polygon points="6 3 20 12 6 21 6 3"/></svg>Interaktive Demo starten</a>
+        <a href="#features" class="btn btn-ghost">Zurück zu den Funktionen</a>
+      </div>
+      <p class="dt-note">Läuft direkt im Browser · Simulierte Produktansicht · keine echten SAP-Daten</p>
+    </div>
+
+    <a href="demo.html" class="dt-frame reveal" aria-label="Zur interaktiven Demo">
+      <div class="dt-chrome">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="url">s4hana.acme.corp/ui#PurchaseOrder-manage</span>
+        <span class="exts">
+          <span class="pin"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c0-4 3.4-6 7.5-6s7.5 2 7.5 6z"/></svg></span>
+          <span class="puz"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"/></svg></span>
+        </span>
+      </div>
+      <div class="dt-body">
+        <div class="dt-toolbar">
+          <span class="grip"><i></i></span>
+          <span class="rec"><i></i></span>
+          <span><i></i></span><span><i></i></span><span><i></i></span>
+        </div>
+        <div class="dt-rows">
+          <div class="r"><span><b>4500017231</b></span><span>Thyssen Metall AG</span><span>Offen</span></div>
+          <div class="r hit"><span><b>4500017232</b></span><span>Stahlhandel Nord</span><span>Freigegeben</span></div>
+          <div class="r"><span><b>4500017233</b></span><span>MetCoil GmbH</span><span>Offen</span></div>
+        </div>
+        <div class="dt-tip">ui5:role=gridcell[text="4500017232"]</div>
+        <div class="dt-play"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="6 3 20 12 6 21 6 3"/></svg>Live ausprobieren</div>
+      </div>
+    </a>
   </div>
 </section>
 
