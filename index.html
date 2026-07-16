@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>metalsXP Demos</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,7 +33,13 @@
         }
         header .dot{
             display:inline-block;width:10px;height:10px;border-radius:50%;
-            background:var(--blue);margin-right:8px;box-shadow:0 0 0 4px rgba(10,110,209,.15);
+            background:var(--blue);margin-right:8px;
+            animation: pulse-dot 2s ease-out infinite;
+        }
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(10,110,209,.45); }
+            70% { box-shadow: 0 0 0 10px rgba(10,110,209,0); }
+            100% { box-shadow: 0 0 0 0 rgba(10,110,209,0); }
         }
         header h1 {
             font-size: 1.9rem;
