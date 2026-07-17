@@ -850,9 +850,10 @@
     if(!el) return;
     if(on){
       el.classList.add('pending'); el.classList.remove('done');
-      // aktuellen Step im Fokus halten — Scrollbalken läuft mit
-      var top=el.offsetTop - stepsEl.clientHeight/2 + el.clientHeight/2;
-      stepsEl.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+      // aktuellen Step MITTIG halten (fertige grüne Steps darüber sichtbar) — robust via BoundingRect
+      var er=el.getBoundingClientRect(), cr=stepsEl.getBoundingClientRect();
+      var target=stepsEl.scrollTop + (er.top - cr.top) - (stepsEl.clientHeight/2 - el.offsetHeight/2);
+      stepsEl.scrollTo({top:Math.max(0,target),behavior:'smooth'});
     } else {
       el.classList.remove('pending'); el.classList.add('done');
     }
