@@ -196,6 +196,33 @@
   .qppd-grid .qs.wait{background:var(--fi-warn-bg);color:var(--fi-warn)}
   .qppd-note{margin-top:14px;font-size:.72rem;color:#9aa4ad}
   .qppd-note code{background:#f3f4f6;border-radius:4px;padding:1px 5px;font-size:.9em;color:var(--fi-brand)}
+  /* Recorder Tab-Panels + pulseXP Portal-Repository */
+  .rtab[hidden]{display:none}
+  .repo-conn{display:flex;align-items:center;gap:7px;font-size:.76rem;color:#3C4653;padding:2px 2px 10px}
+  .repo-conn b{color:#1A2332}
+  .repo-conn .repo-dot{width:8px;height:8px;border-radius:50%;background:var(--ds-success-title);box-shadow:0 0 0 3px rgba(161,185,119,.25)}
+  .repo-conn .repo-sync{margin-left:auto;cursor:pointer;color:#8494a3;font-size:1rem}
+  .repo-tree{background:#f3f4f6;border-radius:12px;padding:8px;max-height:300px;overflow-y:auto}
+  .repo-folder{margin-bottom:4px}
+  .repo-folder-row{display:flex;align-items:center;gap:8px;padding:8px;font-size:.83rem;font-weight:600;color:#1A2332;cursor:pointer;border-radius:8px;user-select:none}
+  .repo-folder-row:hover{background:#eaedf0}
+  .repo-folder-row .chev{width:12px;height:12px;color:#5F6B78;transition:transform .2s;flex-shrink:0}
+  .repo-folder.open > .repo-folder-row .chev{transform:rotate(90deg)}
+  .repo-folder-row .fold{width:16px;height:16px;color:#D9A648;flex-shrink:0}
+  .repo-folder-row .cnt{margin-left:auto;font-size:.7rem;font-weight:600;color:#9aa4ad}
+  .repo-tests{display:none;padding:2px 0 4px 20px}
+  .repo-folder.open > .repo-tests{display:block}
+  .repo-test{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e7eaee;border-radius:8px;padding:8px 10px;margin:5px 6px 0 0;box-shadow:0 1px 3px rgba(21,35,49,.06)}
+  .repo-test .spec{flex:1;min-width:0}
+  .repo-test .spec .fn{font-size:.76rem;font-weight:600;color:#1A2332;font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .repo-test .spec .meta{font-size:.68rem;color:#8494a3;margin-top:1px}
+  .repo-test .load{flex-shrink:0;background:var(--rec-chrome-blue);color:#fff;border:none;border-radius:999px;font-size:.72rem;font-weight:700;padding:6px 13px;cursor:pointer;font-family:inherit}
+  .repo-test .load:hover{background:#1667d1}
+  .upl-box{text-align:center;padding:22px 14px;color:#7E777C}
+  .upl-box svg{width:42px;height:42px;color:#B6C8D6;margin-bottom:10px}
+  .upl-box p{font-size:.82rem;line-height:1.5;margin-bottom:14px}
+  .upl-box b{color:#1A2332}
+  .upl-btn{background:var(--ds-primary);color:#fff;border:none;border-radius:999px;font-size:.82rem;font-weight:700;padding:9px 20px;cursor:pointer;font-family:inherit}
 
   /* recording highlight on targets */
   .rec-on [data-rec]{outline:1.5px dashed rgba(165,103,156,.55);outline-offset:1px;border-radius:4px}
@@ -516,9 +543,10 @@
       <span class="r-logo">pulse<sup>XP</sup></span><span class="r-logo-b">Recorder</span>
       <span class="r-account">Demo User <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></span>
     </div>
-    <div class="r-tabs"><span class="r-tab active">Record</span><span class="r-tab">Upload</span><span class="r-tab">Tests</span></div>
+    <div class="r-tabs"><span class="r-tab active" data-rtab="record">Record</span><span class="r-tab" data-rtab="upload">Upload</span><span class="r-tab" data-rtab="tests">Tests</span></div>
   </div>
   <div class="r-body">
+    <div class="rtab" id="rtab-record">
     <div class="r-card">
       <div class="r-card-head">
         <h4>Record Process</h4>
@@ -542,6 +570,22 @@
           <button class="r-fbtn redo" id="redo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>Redo</button>
           <button class="r-fbtn del" id="delvvlast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>Delete</button>
         </span>
+      </div>
+    </div>
+    </div><!-- /rtab-record -->
+
+    <!-- Tests-Tab: pulseXP Portal Repository -->
+    <div class="rtab" id="rtab-tests" hidden>
+      <div class="repo-conn"><span class="repo-dot"></span>Verbunden · <b>pulseXP Portal</b><span class="repo-sync" id="repoSync" title="Sync">⟳</span></div>
+      <div class="repo-tree" id="repoTree"></div>
+    </div>
+
+    <!-- Upload-Tab -->
+    <div class="rtab" id="rtab-upload" hidden>
+      <div class="upl-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        <p>Aufgenommenen Prozess als <b>.spec.ts</b> exportieren oder ins Portal hochladen.</p>
+        <button class="upl-btn" id="uplDownload">Download .spec.ts</button>
       </div>
     </div>
   </div>
@@ -775,7 +819,7 @@
 
     for(var i=0;i<steps.length;i++){
       var s=steps[i]; highlightStep(i,true);
-      if(s.assert||s.nav){ await sleep(250); highlightStep(i,false); continue; }
+      if(s.assert||s.nav||s.loaded){ await sleep(220); highlightStep(i,false); continue; }
       if(s.grid){
         navigate('QPPD-manage'); await sleep(300);
         var gcell=document.querySelector('#app-qppd [data-grid-row="'+s.grid.row+'"][data-grid-col="'+s.grid.col+'"]');
@@ -937,12 +981,7 @@
   var LAUNCHPAD=[
     {space:'favoriten',name:'Schnellzugriff',tiles:[
       {t:'Bestellungen verwalten',s:'Offene Bestellungen · Werk 1200',kpi:'47',unit:'offen',ico:'cart',mod:'MM',route:'PurchaseOrder-manage'},
-      {t:'Kundenaufträge verwalten',s:'Warmband S355/S235',kpi:'63',unit:'offen',ico:'cart',mod:'SD'},
-      {t:'Fertigungsaufträge verwalten',s:'Schmelzen · Warmwalzen',kpi:'28',unit:'freigegeben',ico:'factory',mod:'PP'},
-      {t:'Prüflose verwalten',s:'Chargenprüfung je Schmelze',kpi:'34',unit:'offen',ico:'check',mod:'QM'},
-      {t:'QPPD — Spezifikationen',s:'Produkt-/Bedarfsspez. · /sct/qppd',kpi:'128',unit:'aktiv',ico:'check',mod:'QM',route:'QPPD-manage'},
-      {t:'Bestandsübersicht anzeigen',s:'Coil-/Brammenbestand nach Güte',kpi:'12.400',unit:'t',ico:'box',mod:'MM'},
-      {t:'Meine Eingänge',s:'Freigaben BANF / Aufträge / Zeugnisse',kpi:'9',unit:'Aufgaben',ico:'inbox',mod:'Workflow'}
+      {t:'QPPD — Spezifikationen',s:'Produkt-/Bedarfsspez. · /sct/qppd',kpi:'128',unit:'aktiv',ico:'check',mod:'QM',route:'QPPD-manage'}
     ]},
     {space:'einkauf',name:'Einkauf & Beschaffung',tiles:[
       {t:'Bestellungen verwalten',s:'Ferrolegierungen / Schrott',kpi:'47',unit:'offen',ico:'cart',mod:'MM',route:'PurchaseOrder-manage'},
@@ -1048,6 +1087,60 @@
     if(r){ navigate(r); } else { showToast('Diese App ist in der Demo nicht hinterlegt.'); }
   });
   navigate('Shell-home');
+
+  var REPO_TESTS=[
+    {id:'qppd-selectors',name:'QPPD Smoke — Selektoren',folder:'QPPD',mod:'QM',route:'QPPD-manage',steps:[{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · sct'},{ico:'click',txt:'Click \'Create\''},{ico:'fill',txt:'Enter \'MX_TECHNICAL*\' into \'Specification Type\''},{ico:'click',txt:'Click \'Specification Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Ok\''},{ico:'click',txt:'Click \'Value\' in row where \'Element\' = \'MX_PRODUCTSPEC\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'18749\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Value\' in row where \'Element\' = \'MX_DEMANDSPEC\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'15747\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Right-click \'\'1\' at level 1\''},{ico:'click',txt:'Click \'Create Items\''},{ico:'click',txt:'Click \'Routing Overview\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Casting\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'FINISHED\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Homogenization\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'FINISHED\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Vertical Saw\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'\'In Production\' in column "Status"\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Hoizontal Saw\''},{ico:'click',txt:'Click \'#ls-inputfieldhelpbutton\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Milling\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Element (13)\' in row where \'Short text\' = \'Casting\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'KM\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Homogenization\''},{ico:'fill',txt:'Enter \'1234\' into \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Homogenization\''},{ico:'click',txt:'Click \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Milling\''},{ico:'fill',txt:'Enter \'5678\' into \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Milling\''},{ico:'click',txt:'Click \'Value (14)\' in row where \'Short text\' = \'Hoizontal Saw\''},{ico:'fill',txt:'Enter \'99\' into \'Value (14)\' in row where \'Short text\' = \'Hoizontal Saw\''},{ico:'click',txt:'Click \'Complete\''},{ico:'click',txt:'Click \'Set as inactive\''},{ico:'click',txt:'Click \'New selection\''},{ico:'click',txt:'Click \'Specification Type\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'\'Demandspec BP Alu\' in column "Status"\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Perform selection\''},{ico:'click',txt:'Click \'Demandspec BP Alu expand icon\''},{ico:'click',txt:'Click \'7520 expand icon at level 1\''},{ico:'click',txt:'Click \'6122 expand icon at level 2\''},{ico:'click',txt:'Click \'9300 expand icon at level 3\''},{ico:'click',txt:'Click \'\'40000135\' at level 4\''},{ico:'grid',txt:'Assert \'\'Short text\' in row where \'Element\' = \'MX_PACK_LABELCODE\'\' has text \'ALINVEST Default\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · ubc'},{ico:'fill',txt:'Enter \'Z_VBELN_PROCESS\' into \'interface name\''},{ico:'fill',txt:'Press Enter'},{ico:'click',txt:'Click \'Fr.Value\' in row where \'Fr.Value\' = \'SD Document\''},{ico:'fill',txt:'Enter \'14326\' into \'Fr.Value\' in row where \'Fr.Value\' = \'SD Document\''},{ico:'click',txt:'Click \'Select\''},{ico:'grid',txt:'Assert \'\'Message text\' in row where \'Run\' = \'1\'\' has text \'Sales order \'14326\' was send to PSI.\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · se16n'},{ico:'fill',txt:'Enter \'MARA\' into \'Table\''},{ico:'fill',txt:'Press Enter'},{ico:'click',txt:'Click \'Frm-Val.\' in row where \'Frm-Val.\' = \'Material Type\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'MAT\' in Material Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Online\''},{ico:'grid',txt:'Assert \'\'Changed By\' in row where \'Description\' = \'Trading Good 0011,PD,Regular Proc.\'\' has text \'S4H_MM\''},{ico:'click',txt:'Click \'Back (F3)\''},{ico:'click',txt:'Click \'Frm-Val.\' in row where \'Frm-Val.\' = \'Material Type\''},{ico:'fill',txt:'Enter \'\' into \'Frm-Val.\' in row where \'Frm-Val.\' = \'Material Type\''},{ico:'click',txt:'Click \'Online\''},{ico:'grid',txt:'Assert \'ABAP System Field: Row Index of Internal Tables\' has value \'500\''},{ico:'grid',txt:'Assert \'Number of Hits\' has value \'500\''},{ico:'grid',txt:'Assert \'\'Last Change\' in row where \'Description\' = \'Honeycomb Cutting Table 40x24\'\' has text \'24.08.2020\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · '},{ico:'click',txt:'Click \'Search\''},{ico:'click',txt:'Click \'Name\''},{ico:'fill',txt:'Enter \'DT_MAPPING\' into \'Name\''},{ico:'click',txt:'Click \'Search\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'1\''},{ico:'click',txt:'Click \'Toggle "Select All" checkbox\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'1\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'2\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'4\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'3\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'6\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'9\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'4\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'9\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · '},{ico:'click',txt:'Click \'Details\' in row where \'SpecificationType\' = \'TECHO demo with mdVC\''},{ico:'grid',txt:'Assert \'Yes\' has text \'YesObject StatusWarning issued\''},{ico:'grid',txt:'Assert \'08.04.2026, 12:23:25\' has text \'08.04.2026, 12:23:25\''},{ico:'click',txt:'Click \'Back\''},{ico:'click',txt:'Click \'Details\' in row where \'SpecificationType\' = \'SAP ECC Document\''}]},
+    {id:'qppd-multitab',name:'QPPD Multitab',folder:'QPPD',mod:'QM',route:'QPPD-manage',steps:[{ico:'nav',txt:'Tab 2: QPPD'},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · /sct/qppd'},{ico:'click',txt:'Click \'Create\''},{ico:'click',txt:'Click \'Specification Type\''},{ico:'click',txt:'Click \'Select \'Playground\' in Specification Type\''},{ico:'nav',txt:'Tab 1: QPPD'},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · /sct/qppd'},{ico:'click',txt:'Click \'Specification Type\''}]},
+    {id:'sd-va01',name:'Kundenauftrag VA01 (Copy & Paste)',folder:'Vertrieb (SD)',mod:'SD',route:'PurchaseOrder-manage',steps:[{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · va01'},{ico:'click',txt:'Click \'Sales Document Type\''},{ico:'click',txt:'Click \'Select \'MX Template Sales Or\' in Sales Document Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Continue\''},{ico:'click',txt:'Click \'Sold-to Party\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'WERK 1\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Ship-to Party\''},{ico:'click',txt:'Click \'Ship-to Party\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'WERK 1\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Cust. Reference\''},{ico:'fill',txt:'Enter \'copy paste smoke test\' into \'Cust. Reference\''},{ico:'click',txt:'Click \'Material\' in row where \'Material\' = \'FREETEXT\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Material\''},{ico:'fill',txt:'Enter \'MX_*\' into \'Material\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'MX_6122\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Order Quantity\' in row where \'Order Quantity\' = \'FREETEXT\''},{ico:'fill',txt:'Enter \'1000\' into \'Order Quantity\' in row where \'Order Quantity\' = \'MX_6122\''},{ico:'click',txt:'Click \'Save\''},{ico:'grid',txt:'Assert \'4.000,00 EUR\' has text \'4.000,00 EUR\''},{ico:'click',txt:'Click \'Done\''},{ico:'click',txt:'Click \'Save\''},{ico:'click',txt:'Click \'Save\''}]}
+  ];
+
+  /* ── Recorder Tab-Umschaltung (Record · Upload · Tests) ── */
+  (function(){
+    var tabs=document.querySelectorAll('#recorder .r-tab[data-rtab]');
+    var panels={record:document.getElementById('rtab-record'),upload:document.getElementById('rtab-upload'),tests:document.getElementById('rtab-tests')};
+    function switchTab(name){
+      tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-rtab')===name); });
+      for(var k in panels){ if(panels[k]) panels[k].hidden=(k!==name); }
+    }
+    tabs.forEach(function(t){ t.addEventListener('click',function(){ switchTab(t.getAttribute('data-rtab')); }); });
+    window.__recSwitchTab=switchTab;
+  })();
+
+  /* ── pulseXP Portal Repository (Ordner > .spec.ts) rendern ── */
+  (function(){
+    var tree=document.getElementById('repoTree'); if(!tree) return;
+    var folders={};
+    REPO_TESTS.forEach(function(t){ (folders[t.folder]=folders[t.folder]||[]).push(t); });
+    var foldSvg='<svg class="fold" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>';
+    var chev='<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>';
+    var html='';
+    Object.keys(folders).forEach(function(fn,i){
+      var tests=folders[fn];
+      var rows=tests.map(function(t){
+        return '<div class="repo-test"><div class="spec"><div class="fn">'+t.id+'.spec.ts</div><div class="meta">'+t.steps.length+' Steps &middot; '+t.mod+'</div></div><button class="load" data-load="'+t.id+'">Load</button></div>';
+      }).join('');
+      html+='<div class="repo-folder'+(i===0?' open':'')+'"><div class="repo-folder-row">'+chev+foldSvg+fn+'<span class="cnt">'+tests.length+'</span></div><div class="repo-tests">'+rows+'</div></div>';
+    });
+    tree.innerHTML=html;
+    tree.querySelectorAll('.repo-folder-row').forEach(function(row){ row.addEventListener('click',function(){ row.parentElement.classList.toggle('open'); }); });
+    tree.querySelectorAll('.load').forEach(function(b){ b.addEventListener('click',function(e){ e.stopPropagation(); loadTest(b.getAttribute('data-load')); }); });
+  })();
+
+  function loadTest(id){
+    var test=REPO_TESTS.filter(function(t){ return t.id===id; })[0]; if(!test) return;
+    if(recording) setRecording(false);
+    steps=test.steps.map(function(s){ return {ico:s.ico,txt:s.txt,loaded:true}; });
+    redoStack=[]; renderSteps();
+    if(window.__recSwitchTab) window.__recSwitchTab('record');
+    if(test.route) navigate(test.route);
+    showToast('Test geladen: '+test.name+' ('+test.steps.length+' Steps)');
+  }
+
+  /* Upload-Tab + Sync (Demo) */
+  (function(){
+    var dl=document.getElementById('uplDownload'); if(dl) dl.addEventListener('click',function(){ showToast('Export als .spec.ts (Demo)'); });
+    var sync=document.getElementById('repoSync'); if(sync) sync.addEventListener('click',function(){ showToast('Repository synchronisiert · pulseXP Portal'); });
+  })();
 
   renderSteps();
 })();
