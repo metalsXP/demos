@@ -1,4 +1,4 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Deploy static content to GitHub Pages — mit vorgeschaltetem Validierungs-Gate
 name: Deploy static content to Pages
 
 on:
@@ -22,8 +22,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  # ── GATE: HTML/JS-Validierung. Schlaegt sie fehl, wird NICHT deployed. ──
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate hildegard/*.html (div-Balance + JS-Syntax)
+        run: python3 .github/scripts/validate-hildegard.py
+
+  # ── Deploy nur, wenn 'validate' bestanden hat ──
   deploy:
+    needs: validate
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
