@@ -782,5 +782,18 @@
   document.addEventListener('keydown',function(e){ if(e.key==='Escape') pop.hidden=true; });
 })();
 </script>
+<script>
+/* Recorder-Panel höhenbündig zum Browser-Rahmen (folgt beim Scrollen, bis der Nutzer zieht) */
+(function(){
+  var rec=document.getElementById('recorder'), br=document.querySelector('.browser'), handle=document.getElementById('drag-handle');
+  if(!rec||!br) return;
+  var auto=true;
+  function align(){ if(window.innerWidth<=820){ rec.style.top=''; return; } if(!auto) return; rec.style.top=Math.max(12, br.getBoundingClientRect().top)+'px'; }
+  if(handle) handle.addEventListener('pointerdown',function(){ auto=false; }, true);
+  window.addEventListener('scroll', align, {passive:true});
+  window.addEventListener('resize', align);
+  align();
+})();
+</script>
 </body>
 </html>
