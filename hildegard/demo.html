@@ -356,8 +356,9 @@
 
 <div class="wrap intro">
   <a href="./index.html" style="display:inline-block;margin-bottom:10px;color:#3B5E78;text-decoration:none;font-size:.85rem;font-weight:600">← Zurück zur Übersicht</a>
-  <h1>Live-Recorder auf einer echten Fiori-Oberfläche</h1>
-  <p>Eine nachgebaute SAP-Fiori-Seite (Horizon) mit lazy-ladender Tabelle. Der Recorder rechts lässt sich <b>frei ziehen</b> und schwebt beim Scrollen mit. Nehmen Sie eine Interaktion auf und spielen Sie sie ab — die Zielzeile wird trotz Nachladen über einen stabilen Selektor wiedergefunden.</p>
+  <span style="display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A5679C;margin-bottom:6px">Der Härtefall · Lazy-Loading-Tabellen</span>
+  <h1>Prüfen, was noch gar nicht geladen ist.</h1>
+  <p>SAP-Tabellen in Fiori und QPPD laden ihre Zeilen <b>virtualisiert</b> nach — was nicht sichtbar ist, existiert im DOM nicht. Wollen Sie beim Aufnehmen eine bestimmte Charge oder Bestellung prüfen, steht sie oft noch gar nicht auf der Seite. Generische Recorder verlieren sie. pulseXP erfasst die Zielzeile über <b>SAP-Semantik</b> (Zeile per Spaltenwert, nicht per Position) und findet sie beim Replay stabil wieder. Nehmen Sie es unten selbst auf — der Recorder rechts ist frei ziehbar.</p>
   <div class="hintbar">
     <span class="hint"><span class="n">1</span> Recorder an der Titelleiste <b>ziehen</b></span>
     <span class="hint"><span class="n">2</span> <b>Record</b> drücken</span>
@@ -519,6 +520,37 @@
       </table>
       <div class="qppd-note">Simulierte QPPD-Ansicht (Transaktion /sct/qppd) · Selektoren im echten Engine-Format <code>sapgridcell=…</code></div>
     </div><!-- /app-qppd -->
+
+    <!-- ═══ APP · Kundenauftrag anlegen (VA01) ═══ -->
+    <div id="app-va01" class="sap-app" hidden>
+      <div class="qppd-bar">
+        <span class="qppd-btn" data-rec data-sid="wnd[0]/tbar[0]/btn[11]" data-rec-label="Save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Save</span>
+        <span class="qppd-btn ghost" data-rec data-sid="wnd[0]/tbar[0]/btn[0]" data-rec-label="Continue">Continue</span>
+        <span class="qppd-crumb">Create Sales Order · <b>VA01</b> · MX Template Sales Order</span>
+      </div>
+
+      <div class="qppd-sec">Auftragskopf</div>
+      <table class="qppd-grid">
+        <thead><tr><th>Feld</th><th>Wert</th></tr></thead>
+        <tbody>
+          <tr><td>Sales Document Type</td><td class="cell" data-rec data-sid="wnd[0]/usr/ctxtVBAK-AUART" data-rec-label="Sales Document Type"><b>TA</b> · MX Template Sales Order</td></tr>
+          <tr><td>Sold-to Party</td><td class="cell" data-rec data-sid="wnd[0]/usr/ctxtKUAGV-KUNNR" data-rec-label="Sold-to Party"><b>0011</b> · ALINVEST Default</td></tr>
+          <tr><td>Ship-to Party</td><td class="cell" data-rec data-sid="wnd[0]/usr/ctxtKUWEV-KUNNR" data-rec-label="Ship-to Party"><b>0011</b> · ALINVEST Default</td></tr>
+          <tr><td>PO Number</td><td class="cell" data-rec data-sid="wnd[0]/usr/ctxtVBKD-BSTKD" data-rec-label="PO Number">Z_VBELN_PROCESS</td></tr>
+        </tbody>
+      </table>
+
+      <div class="qppd-sec">Positionen</div>
+      <table class="qppd-grid">
+        <thead><tr><th>Material</th><th>Order Quantity</th><th>Net Value</th><th>Plant</th></tr></thead>
+        <tbody>
+          <tr><td>Warmband S355</td><td class="cell" data-rec data-rec-label="Order Quantity" data-grid-row="Material=Warmband S355" data-grid-col="Order Quantity">120 t</td><td>78.240 €</td><td>1200</td></tr>
+          <tr><td>Grobblech P265GH</td><td class="cell" data-rec data-rec-label="Order Quantity" data-grid-row="Material=Grobblech P265GH" data-grid-col="Order Quantity">40 t</td><td>31.600 €</td><td>1200</td></tr>
+          <tr><td>Bandstahl C75</td><td class="cell" data-rec data-rec-label="Order Quantity" data-grid-row="Material=Bandstahl C75" data-grid-col="Order Quantity">65 t</td><td>52.130 €</td><td>1200</td></tr>
+        </tbody>
+      </table>
+      <div class="qppd-note">Simulierte VA01-Ansicht (Kundenauftrag anlegen) · Kopf-Felder <code>sid=…</code> · Positionen <code>sapgridcell=…</code></div>
+    </div><!-- /app-va01 -->
   </div>
 </div>
 
@@ -689,6 +721,7 @@
     if(el.id==='f-supplier') return 'sid=wnd[0]/usr/txtSUPPLIER-LOW';
     if(el.id==='f-status')   return 'sid=wnd[0]/usr/txtSTATUS-LOW';
     if(el.id==='f-go')       return 'sid=wnd[0]/tbar[1]/btn[8]';
+    if(el.getAttribute && el.getAttribute('data-sid')) return 'sid='+el.getAttribute('data-sid');
     var gr=el.getAttribute && el.getAttribute('data-grid-row'), gc=el.getAttribute && el.getAttribute('data-grid-col');
     if(gr&&gc) return 'sapgridcell=grid#0|row:'+gr+'|col:'+gc;
     var lbl=el.getAttribute && el.getAttribute('data-rec-label');
@@ -752,9 +785,12 @@
       addStep({ico:'click',txt:"Click 'Erstellen'",sel:genSelector(t)});
     } else if(t.hasAttribute('data-route')){
       addStep({ico:'nav',txt:"Open '"+t.getAttribute('data-rec-label')+"'",sel:genSelector(t),nav:true});
+    } else if(t.getAttribute('data-sid')){
+      addStep({ico:'click',txt:"Click '"+t.getAttribute('data-rec-label')+"'",sel:genSelector(t)});
     } else if(t.getAttribute('data-grid-row')){
       var grp=t.getAttribute('data-grid-row').split('='), gcol=t.getAttribute('data-grid-col');
-      addStep({ico:'grid',txt:"Click '"+gcol+"' in row where '"+grp[0]+"' = '"+grp[1]+"'",sel:genSelector(t),grid:{row:t.getAttribute('data-grid-row'),col:gcol}});
+      var grt=t.closest('#app-va01')?'SalesOrder-va01':'QPPD-manage';
+      addStep({ico:'grid',txt:"Click '"+gcol+"' in row where '"+grp[0]+"' = '"+grp[1]+"'",sel:genSelector(t),grid:{row:t.getAttribute('data-grid-row'),col:gcol,route:grt}});
     }
   },true);
   // capture fills on filter inputs (on change)
@@ -821,10 +857,11 @@
       var s=steps[i]; highlightStep(i,true);
       if(s.assert||s.nav||s.loaded){ await sleep(220); highlightStep(i,false); continue; }
       if(s.grid){
-        navigate('QPPD-manage'); await sleep(300);
-        var gcell=document.querySelector('#app-qppd [data-grid-row="'+s.grid.row+'"][data-grid-col="'+s.grid.col+'"]');
+        var grt=s.grid.route||'QPPD-manage'; navigate(grt); await sleep(300);
+        var gapp=grt==='SalesOrder-va01'?'#app-va01':'#app-qppd';
+        var gcell=document.querySelector(gapp+' [data-grid-row="'+s.grid.row+'"][data-grid-col="'+s.grid.col+'"]');
         if(gcell){ gcell.scrollIntoView({behavior:'smooth',block:'center'}); await sleep(500); moveCursorTo(gcell); await sleep(600); pulseAt(gcell);
-          document.querySelectorAll('#app-qppd .qppd-hit').forEach(function(c){c.classList.remove('qppd-hit');}); gcell.classList.add('qppd-hit'); }
+          document.querySelectorAll('.qppd-hit').forEach(function(c){c.classList.remove('qppd-hit');}); gcell.classList.add('qppd-hit'); }
         await sleep(650); highlightStep(i,false); continue;
       }
       if(s.fill){
@@ -940,7 +977,8 @@
   var ROUTES={
     'Shell-home':{title:'Home',app:'app-home'},
     'PurchaseOrder-manage':{title:'Bestellungen verwalten',app:'app-po'},
-    'QPPD-manage':{title:'QPPD — Spezifikationen',app:'app-qppd'}
+    'QPPD-manage':{title:'QPPD — Spezifikationen',app:'app-qppd'},
+    'SalesOrder-va01':{title:'Kundenauftrag anlegen (VA01)',app:'app-va01'}
   };
   var burlUrl=document.getElementById('burl-url'), ftitleEl=document.getElementById('ftitle'), sapBack=document.getElementById('sap-back');
   function navigate(route){
@@ -997,7 +1035,7 @@
       {t:'Fakturen verwalten',s:'Fällige Rechnungen (Netto-t)',kpi:'15',unit:'offen',ico:'euro',mod:'SD'},
       {t:'Rückstände analysieren',s:'Auftragsrückstand Warmband',kpi:'340',unit:'t',ico:'chart',mod:'SD'},
       {t:'Angebote verwalten',s:'Anfragen Bandstahl S355/S420',ico:'doc',mod:'SD'},
-      {t:'Kundenaufträge anlegen',s:'Neuauftrag Grobblech P265GH',ico:'cart',mod:'SD'}
+      {t:'Kundenaufträge anlegen',s:'VA01 · MX Template Sales Order',ico:'cart',mod:'SD',route:'SalesOrder-va01'}
     ]},
     {space:'produktion',name:'Produktion & Fertigung',tiles:[
       {t:'Fertigungsaufträge verwalten',s:'Stranggießen · Warmwalzen',kpi:'28',unit:'freigegeben',ico:'factory',mod:'PP'},
@@ -1091,7 +1129,7 @@
   var REPO_TESTS=[
     {id:'qppd-selectors',name:'QPPD Smoke — Selektoren',folder:'QPPD',mod:'QM',route:'QPPD-manage',steps:[{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · sct'},{ico:'click',txt:'Click \'Create\''},{ico:'fill',txt:'Enter \'MX_TECHNICAL*\' into \'Specification Type\''},{ico:'click',txt:'Click \'Specification Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Ok\''},{ico:'click',txt:'Click \'Value\' in row where \'Element\' = \'MX_PRODUCTSPEC\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'18749\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Value\' in row where \'Element\' = \'MX_DEMANDSPEC\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'15747\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Right-click \'\'1\' at level 1\''},{ico:'click',txt:'Click \'Create Items\''},{ico:'click',txt:'Click \'Routing Overview\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Casting\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'FINISHED\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Homogenization\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'FINISHED\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Vertical Saw\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'\'In Production\' in column "Status"\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Hoizontal Saw\''},{ico:'click',txt:'Click \'#ls-inputfieldhelpbutton\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Production Status Value\' in row where \'Short text\' = \'Milling\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Element (13)\' in row where \'Short text\' = \'Casting\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'KM\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Homogenization\''},{ico:'fill',txt:'Enter \'1234\' into \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Homogenization\''},{ico:'click',txt:'Click \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Milling\''},{ico:'fill',txt:'Enter \'5678\' into \'Poduction Unit 5 Value\' in row where \'Short text\' = \'Milling\''},{ico:'click',txt:'Click \'Value (14)\' in row where \'Short text\' = \'Hoizontal Saw\''},{ico:'fill',txt:'Enter \'99\' into \'Value (14)\' in row where \'Short text\' = \'Hoizontal Saw\''},{ico:'click',txt:'Click \'Complete\''},{ico:'click',txt:'Click \'Set as inactive\''},{ico:'click',txt:'Click \'New selection\''},{ico:'click',txt:'Click \'Specification Type\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'\'Demandspec BP Alu\' in column "Status"\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Perform selection\''},{ico:'click',txt:'Click \'Demandspec BP Alu expand icon\''},{ico:'click',txt:'Click \'7520 expand icon at level 1\''},{ico:'click',txt:'Click \'6122 expand icon at level 2\''},{ico:'click',txt:'Click \'9300 expand icon at level 3\''},{ico:'click',txt:'Click \'\'40000135\' at level 4\''},{ico:'grid',txt:'Assert \'\'Short text\' in row where \'Element\' = \'MX_PACK_LABELCODE\'\' has text \'ALINVEST Default\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · ubc'},{ico:'fill',txt:'Enter \'Z_VBELN_PROCESS\' into \'interface name\''},{ico:'fill',txt:'Press Enter'},{ico:'click',txt:'Click \'Fr.Value\' in row where \'Fr.Value\' = \'SD Document\''},{ico:'fill',txt:'Enter \'14326\' into \'Fr.Value\' in row where \'Fr.Value\' = \'SD Document\''},{ico:'click',txt:'Click \'Select\''},{ico:'grid',txt:'Assert \'\'Message text\' in row where \'Run\' = \'1\'\' has text \'Sales order \'14326\' was send to PSI.\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · se16n'},{ico:'fill',txt:'Enter \'MARA\' into \'Table\''},{ico:'fill',txt:'Press Enter'},{ico:'click',txt:'Click \'Frm-Val.\' in row where \'Frm-Val.\' = \'Material Type\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Select \'MAT\' in Material Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Online\''},{ico:'grid',txt:'Assert \'\'Changed By\' in row where \'Description\' = \'Trading Good 0011,PD,Regular Proc.\'\' has text \'S4H_MM\''},{ico:'click',txt:'Click \'Back (F3)\''},{ico:'click',txt:'Click \'Frm-Val.\' in row where \'Frm-Val.\' = \'Material Type\''},{ico:'fill',txt:'Enter \'\' into \'Frm-Val.\' in row where \'Frm-Val.\' = \'Material Type\''},{ico:'click',txt:'Click \'Online\''},{ico:'grid',txt:'Assert \'ABAP System Field: Row Index of Internal Tables\' has value \'500\''},{ico:'grid',txt:'Assert \'Number of Hits\' has value \'500\''},{ico:'grid',txt:'Assert \'\'Last Change\' in row where \'Description\' = \'Honeycomb Cutting Table 40x24\'\' has text \'24.08.2020\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · '},{ico:'click',txt:'Click \'Search\''},{ico:'click',txt:'Click \'Name\''},{ico:'fill',txt:'Enter \'DT_MAPPING\' into \'Name\''},{ico:'click',txt:'Click \'Search\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'1\''},{ico:'click',txt:'Click \'Toggle "Select All" checkbox\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'1\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'2\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'4\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'3\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'6\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'9\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'4\''},{ico:'click',txt:'Click \'Repository\' in row where \'rr\' = \'9\''},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · '},{ico:'click',txt:'Click \'Details\' in row where \'SpecificationType\' = \'TECHO demo with mdVC\''},{ico:'grid',txt:'Assert \'Yes\' has text \'YesObject StatusWarning issued\''},{ico:'grid',txt:'Assert \'08.04.2026, 12:23:25\' has text \'08.04.2026, 12:23:25\''},{ico:'click',txt:'Click \'Back\''},{ico:'click',txt:'Click \'Details\' in row where \'SpecificationType\' = \'SAP ECC Document\''}]},
     {id:'qppd-multitab',name:'QPPD Multitab',folder:'QPPD',mod:'QM',route:'QPPD-manage',steps:[{ico:'nav',txt:'Tab 2: QPPD'},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · /sct/qppd'},{ico:'click',txt:'Click \'Create\''},{ico:'click',txt:'Click \'Specification Type\''},{ico:'click',txt:'Click \'Select \'Playground\' in Specification Type\''},{ico:'nav',txt:'Tab 1: QPPD'},{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · /sct/qppd'},{ico:'click',txt:'Click \'Specification Type\''}]},
-    {id:'sd-va01',name:'Kundenauftrag VA01 (Copy & Paste)',folder:'Vertrieb (SD)',mod:'SD',route:'PurchaseOrder-manage',steps:[{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · va01'},{ico:'click',txt:'Click \'Sales Document Type\''},{ico:'click',txt:'Click \'Select \'MX Template Sales Or\' in Sales Document Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Continue\''},{ico:'click',txt:'Click \'Sold-to Party\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'WERK 1\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Ship-to Party\''},{ico:'click',txt:'Click \'Ship-to Party\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'WERK 1\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Cust. Reference\''},{ico:'fill',txt:'Enter \'copy paste smoke test\' into \'Cust. Reference\''},{ico:'click',txt:'Click \'Material\' in row where \'Material\' = \'FREETEXT\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Material\''},{ico:'fill',txt:'Enter \'MX_*\' into \'Material\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'MX_6122\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Order Quantity\' in row where \'Order Quantity\' = \'FREETEXT\''},{ico:'fill',txt:'Enter \'1000\' into \'Order Quantity\' in row where \'Order Quantity\' = \'MX_6122\''},{ico:'click',txt:'Click \'Save\''},{ico:'grid',txt:'Assert \'4.000,00 EUR\' has text \'4.000,00 EUR\''},{ico:'click',txt:'Click \'Done\''},{ico:'click',txt:'Click \'Save\''},{ico:'click',txt:'Click \'Save\''}]}
+    {id:'sd-va01',name:'Kundenauftrag VA01 (Copy & Paste)',folder:'Vertrieb (SD)',mod:'SD',route:'SalesOrder-va01',steps:[{ico:'nav',txt:'Go to s4h.rp.metalsxp.com · va01'},{ico:'click',txt:'Click \'Sales Document Type\''},{ico:'click',txt:'Click \'Select \'MX Template Sales Or\' in Sales Document Type\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Continue\''},{ico:'click',txt:'Click \'Sold-to Party\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'WERK 1\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Ship-to Party\''},{ico:'click',txt:'Click \'Ship-to Party\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'WERK 1\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Cust. Reference\''},{ico:'fill',txt:'Enter \'copy paste smoke test\' into \'Cust. Reference\''},{ico:'click',txt:'Click \'Material\' in row where \'Material\' = \'FREETEXT\''},{ico:'click',txt:'Click \'Input Field Help\''},{ico:'click',txt:'Click \'Material\''},{ico:'fill',txt:'Enter \'MX_*\' into \'Material\''},{ico:'click',txt:'Click \'Go\''},{ico:'click',txt:'Click \'Select \'MX_6122\' in Restrict Value Range\''},{ico:'click',txt:'Click \'OK\''},{ico:'click',txt:'Click \'Order Quantity\' in row where \'Order Quantity\' = \'FREETEXT\''},{ico:'fill',txt:'Enter \'1000\' into \'Order Quantity\' in row where \'Order Quantity\' = \'MX_6122\''},{ico:'click',txt:'Click \'Save\''},{ico:'grid',txt:'Assert \'4.000,00 EUR\' has text \'4.000,00 EUR\''},{ico:'click',txt:'Click \'Done\''},{ico:'click',txt:'Click \'Save\''},{ico:'click',txt:'Click \'Save\''}]}
   ];
 
   /* ── Recorder Tab-Umschaltung (Record · Upload · Tests) ── */
