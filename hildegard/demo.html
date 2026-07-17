@@ -585,14 +585,17 @@
   resetTable();
 
   /* ─────────── selector engine (semantic-first) ─────────── */
+  /* Selektor-Engine im echten pulseXP-Format (aus smoke-selectors-trace reverse-engineered) */
   function genSelector(el){
     var po=el.getAttribute && el.getAttribute('data-po');
-    if(po) return 'ui5:role=gridcell[text="'+po+'"]';
-    if(el.id==='f-supplier') return 'ui5:role=Input[label="Lieferant"]';
-    if(el.id==='f-status')   return 'ui5:role=Input[label="Status"]';
-    if(el.id==='f-go')       return 'ui5:role=Button[text="Start"]';
+    if(po) return 'sapgridcell=grid#0|row:Bestellung='+po+'|col:Bestellung';
+    if(el.id==='f-supplier') return 'sid=wnd[0]/usr/txtSUPPLIER-LOW';
+    if(el.id==='f-status')   return 'sid=wnd[0]/usr/txtSTATUS-LOW';
+    if(el.id==='f-go')       return 'sid=wnd[0]/tbar[1]/btn[8]';
     var lbl=el.getAttribute && el.getAttribute('data-rec-label');
-    if(lbl) return 'ui5:role='+(el.tagName==='INPUT'?'Input':'Button')+'[text="'+lbl+'"]';
+    if(el.hasAttribute && el.hasAttribute('data-route')) return 'ui5:GenericTile[header="'+lbl+'"]';
+    if(lbl==='Erstellen') return 'sid=wnd[0]/tbar[1]/btn[14]';
+    if(lbl) return 'ui5:Button[text="'+lbl+'"]';
     return 'css='+el.tagName.toLowerCase();
   }
   var ICONS={
@@ -642,7 +645,8 @@
     var t=e.target.closest('[data-rec]');
     if(!t) return;
     if(t.classList.contains('frow')){
-      addStep({ico:'grid',txt:'Click '+t.getAttribute('data-rec-label'),sel:genSelector(t),po:t.getAttribute('data-po')});
+      var poRow=t.getAttribute('data-po');
+      addStep({ico:'grid',txt:"Click 'Bestellung' in row where 'Bestellung' = '"+poRow+"'",sel:genSelector(t),po:poRow});
     } else if(t.id==='f-go'){
       addStep({ico:'click',txt:"Click 'Start' (Filter anwenden)",sel:genSelector(t)});
     } else if(t.tagName==='SPAN' && t.getAttribute('data-rec-label')==='Erstellen'){
@@ -655,7 +659,7 @@
   [supEl,statEl].forEach(function(inp){
     inp.addEventListener('change',function(){
       if(!recording || !inp.value.trim()) return;
-      addStep({ico:'fill',txt:"Fill '"+inp.getAttribute('data-rec-label')+"' → "+inp.value.trim(),sel:genSelector(inp),fill:{id:inp.id,val:inp.value.trim()}});
+      addStep({ico:'fill',txt:"Enter '"+inp.value.trim()+"' into '"+inp.getAttribute('data-rec-label')+"'",sel:genSelector(inp),fill:{id:inp.id,val:inp.value.trim()}});
     });
   });
 
