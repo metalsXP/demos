@@ -152,12 +152,29 @@
   .tile-ico{width:38px;height:38px;border-radius:9px;background:#eaf1fb;color:var(--fi-brand);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
   .tile-ico svg{width:20px;height:20px}
   .tile-title{font-size:.95rem;font-weight:700;color:var(--fi-text);line-height:1.25}
-  .tile-sub{font-size:.75rem;color:var(--fi-text-2);margin-top:auto;padding-top:10px}
+  .tile-sub{font-size:.75rem;color:var(--fi-text-2);padding-top:5px;line-height:1.35}
   .tile.disabled{opacity:.55;cursor:default;border-style:dashed}
   .tile.disabled .tile-ico{background:#eef1f4;color:#9aa4ad}
   .fback{display:inline-flex;align-items:center;color:#5b738b;cursor:pointer}
   .fback svg{width:18px;height:18px}
   .fback[hidden]{display:none}
+  /* erweiterter Launchpad: Page-Tabs · Sektionen · KPI-Kacheln */
+  #app-home{padding:0}
+  #app-home .tile{position:relative}
+  .lp-tabs{display:flex;gap:2px;padding:0 14px;background:#fff;border-bottom:1px solid var(--fi-line);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+  .lp-tabs::-webkit-scrollbar{display:none}
+  .lp-tab{flex:0 0 auto;background:none;border:none;font-family:inherit;font-size:.84rem;font-weight:600;color:var(--fi-text-2);padding:12px 13px;border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+  .lp-tab:hover{color:var(--fi-text)}
+  .lp-tab.active{color:var(--fi-brand);border-bottom-color:var(--fi-brand)}
+  .lp-body{padding:18px 24px}
+  .lp-section{margin-bottom:22px}
+  .lp-section[hidden]{display:none}
+  .lp-sec-head{font-size:.8rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--fi-text-2);margin-bottom:11px}
+  .tile-mod{position:absolute;top:11px;right:11px;font-size:.56rem;font-weight:700;color:#9aa4ad;letter-spacing:.04em;border:1px solid #e7eaee;border-radius:4px;padding:1px 5px}
+  .tile-kpi{margin-top:auto;padding-top:8px;font-size:.72rem;color:var(--fi-text-2)}
+  .tile-kpi b{font-size:1.4rem;font-weight:800;color:var(--fi-brand);line-height:1;margin-right:5px}
+  .tile.live{border-color:var(--fi-brand);box-shadow:0 0 0 1px var(--fi-brand)}
+  .tile.live .tile-ico{background:var(--fi-brand);color:#fff}
 
   /* recording highlight on targets */
   .rec-on [data-rec]{outline:1.5px dashed rgba(165,103,156,.55);outline-offset:1px;border-radius:4px}
@@ -372,32 +389,13 @@
 
     <!-- ═══ HOME · Fiori Launchpad ═══ -->
     <div id="app-home" class="sap-app">
-      <div class="lp-head">
-        <h2>Startseite</h2>
-        <p>Werk 1200 · Demo User · S/4HANA</p>
-      </div>
-      <div class="lp-group">Warenwirtschaft</div>
-      <div class="lp-grid">
-        <button class="tile" data-route="PurchaseOrder-manage" data-rec data-rec-label="Bestellungen verwalten">
-          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h6"/></svg></span>
-          <span class="tile-title">Bestellungen verwalten</span>
-          <span class="tile-sub">512 Positionen · Lazy-Table</span>
-        </button>
-        <button class="tile disabled" disabled>
-          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
-          <span class="tile-title">Chargenübersicht</span>
-          <span class="tile-sub">geplant</span>
-        </button>
-        <button class="tile disabled" disabled>
-          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
-          <span class="tile-title">Wareneingang buchen</span>
-          <span class="tile-sub">geplant</span>
-        </button>
-        <button class="tile disabled" disabled>
-          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-          <span class="tile-title">Objektseite &amp; F4-Hilfe</span>
-          <span class="tile-sub">geplant</span>
-        </button>
+      <div class="lp-tabs" id="lpTabs"></div>
+      <div class="lp-body">
+        <div class="lp-head">
+          <h2>Startseite · Werk 1200</h2>
+          <p>Acme Stahl GmbH · Demo User · S/4HANA</p>
+        </div>
+        <div id="lp-sections"></div>
       </div>
     </div>
 
@@ -842,8 +840,140 @@
   document.getElementById('sap-home').addEventListener('click',function(){ navigate('Shell-home'); });
   document.getElementById('sap-logo').addEventListener('click',function(){ navigate('Shell-home'); });
   if(sapBack) sapBack.addEventListener('click',function(){ navigate('Shell-home'); });
-  document.querySelectorAll('.tile[data-route]').forEach(function(t){
-    t.addEventListener('click',function(){ navigate(t.getAttribute('data-route')); });
+  /* ── Launchpad-Content (data-driven): neue Kachel = neue Datenzeile ── */
+  var LP_ICONS={
+    cart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H5"/></svg>',
+    doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h6"/></svg>',
+    factory:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V8l-7 4V8l-7 4V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1z"/><path d="M6 18h.01M10 18h.01M14 18h.01M18 18h.01"/></svg>',
+    check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+    cert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg>',
+    box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+    truck:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.6a1 1 0 0 0-.2-.6l-3.5-4.4A1 1 0 0 0 17.5 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>',
+    wrench:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8z"/></svg>',
+    euro:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12M4 14h9"/><path d="M19 6a7.5 7.5 0 1 0 0 12"/></svg>',
+    inbox:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.8 4H7.2a2 2 0 0 0-1.7 1.1z"/></svg>',
+    chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>'
+  };
+  var LP_TABS=[
+    {id:'home',label:'Home',spaces:null},
+    {id:'einkauf',label:'Einkauf',spaces:['einkauf']},
+    {id:'vertrieb',label:'Vertrieb',spaces:['vertrieb']},
+    {id:'produktion',label:'Produktion',spaces:['produktion']},
+    {id:'qualitaet',label:'Qualität',spaces:['qualitaet']},
+    {id:'logistik',label:'Bestand & Logistik',spaces:['bestand','logistik']},
+    {id:'instandhaltung',label:'Instandhaltung',spaces:['instandhaltung']},
+    {id:'finanzen',label:'Finanzen',spaces:['finanzen']}
+  ];
+  var LAUNCHPAD=[
+    {space:'favoriten',name:'Schnellzugriff',tiles:[
+      {t:'Bestellungen verwalten',s:'Offene Bestellungen · Werk 1200',kpi:'47',unit:'offen',ico:'cart',mod:'MM',route:'PurchaseOrder-manage'},
+      {t:'Kundenaufträge verwalten',s:'Warmband S355/S235',kpi:'63',unit:'offen',ico:'cart',mod:'SD'},
+      {t:'Fertigungsaufträge verwalten',s:'Schmelzen · Warmwalzen',kpi:'28',unit:'freigegeben',ico:'factory',mod:'PP'},
+      {t:'Prüflose verwalten',s:'Chargenprüfung je Schmelze',kpi:'34',unit:'offen',ico:'check',mod:'QM'},
+      {t:'Bestandsübersicht anzeigen',s:'Coil-/Brammenbestand nach Güte',kpi:'12.400',unit:'t',ico:'box',mod:'MM'},
+      {t:'Meine Eingänge',s:'Freigaben BANF / Aufträge / Zeugnisse',kpi:'9',unit:'Aufgaben',ico:'inbox',mod:'Workflow'}
+    ]},
+    {space:'einkauf',name:'Einkauf & Beschaffung',tiles:[
+      {t:'Bestellungen verwalten',s:'Ferrolegierungen / Schrott',kpi:'47',unit:'offen',ico:'cart',mod:'MM',route:'PurchaseOrder-manage'},
+      {t:'Bestellanforderungen verwalten',s:'BANFs Roheisen & Zuschlagstoffe',kpi:'12',unit:'zur Freigabe',ico:'doc',mod:'MM'},
+      {t:'Bestellpositionen überwachen',s:'Überfällige Zugänge Vormaterial',kpi:'8',unit:'überfällig',ico:'cart',mod:'MM'},
+      {t:'Lieferantenbewertung anzeigen',s:'Termintreue Schrott/Legierungen',ico:'chart',mod:'MM'},
+      {t:'Rahmenverträge verwalten',s:'Kontrakte Zuschlagstoffe',ico:'doc',mod:'MM'},
+      {t:'Kontraktabrufe anzeigen',s:'Abrufe Jahreskontrakt Legierungen',ico:'doc',mod:'MM'}
+    ]},
+    {space:'vertrieb',name:'Vertrieb & Kundenaufträge',tiles:[
+      {t:'Kundenaufträge verwalten',s:'Warmband S355/S235, Liefertermine',kpi:'63',unit:'offen',ico:'cart',mod:'SD'},
+      {t:'Auslieferungen verwalten',s:'Coil-Auslieferungen ab Werk 1200',kpi:'21',unit:'heute',ico:'truck',mod:'SD'},
+      {t:'Fakturen verwalten',s:'Fällige Rechnungen (Netto-t)',kpi:'15',unit:'offen',ico:'euro',mod:'SD'},
+      {t:'Rückstände analysieren',s:'Auftragsrückstand Warmband',kpi:'340',unit:'t',ico:'chart',mod:'SD'},
+      {t:'Angebote verwalten',s:'Anfragen Bandstahl S355/S420',ico:'doc',mod:'SD'},
+      {t:'Kundenaufträge anlegen',s:'Neuauftrag Grobblech P265GH',ico:'cart',mod:'SD'}
+    ]},
+    {space:'produktion',name:'Produktion & Fertigung',tiles:[
+      {t:'Fertigungsaufträge verwalten',s:'Stranggießen · Warmwalzen',kpi:'28',unit:'freigegeben',ico:'factory',mod:'PP'},
+      {t:'Kapazitätsauslastung anzeigen',s:'Walzstraße / Konverter',kpi:'87',unit:'%',ico:'chart',mod:'PP'},
+      {t:'Fehlteile anzeigen',s:'Fehlende Legierungen für Heats',kpi:'5',unit:'kritisch',ico:'box',mod:'PP'},
+      {t:'Fertigungsaufträge freigeben',s:'Aufträge Güte S355',ico:'factory',mod:'PP'},
+      {t:'Produktionsplan überwachen',s:'Chargenfolge Schmelze → Coil',ico:'chart',mod:'PP'},
+      {t:'Rückmeldungen erfassen',s:'Ist-Mengen / Ausschuss Warmwalzen',ico:'doc',mod:'PP'}
+    ]},
+    {space:'qualitaet',name:'Qualität & Werkszeugnisse',tiles:[
+      {t:'Prüflose verwalten',s:'Zugversuch/Analyse je Schmelze',kpi:'34',unit:'offen',ico:'check',mod:'QM'},
+      {t:'Verwendungsentscheid treffen',s:'Freigabe/Sperre Charge',kpi:'11',unit:'wartend',ico:'check',mod:'QM'},
+      {t:'Qualitätsmeldungen verwalten',s:'Reklamationen Oberfläche/Kantenriss',kpi:'7',unit:'offen',ico:'doc',mod:'QM'},
+      {t:'Werkszeugnisse erstellen (3.1)',s:'Abnahmeprüfzeugnis EN 10204 3.1',ico:'cert',mod:'QM'},
+      {t:'Ergebnisse erfassen',s:'Rp / Rm / A5 je Heat',ico:'check',mod:'QM'},
+      {t:'Zeugnisarchiv anzeigen',s:'Bescheinigung 2.1 / Zeugnis 2.2',ico:'cert',mod:'QM'}
+    ]},
+    {space:'bestand',name:'Bestand & Chargen',tiles:[
+      {t:'Bestandsübersicht anzeigen',s:'Coil-/Brammenbestand nach Güte',kpi:'12.400',unit:'t',ico:'box',mod:'MM'},
+      {t:'Chargen verwalten',s:'Schmelze-Nr., Güte, Charge',kpi:'512',unit:'aktiv',ico:'box',mod:'MM'},
+      {t:'Umlagerungsbestände anzeigen',s:'Transit Werk 1200 → Adjustage',kpi:'1.850',unit:'t',ico:'truck',mod:'MM'},
+      {t:'Warenbewegungen buchen',s:'Wareneingang Schrott/Legierungen',ico:'box',mod:'MM'},
+      {t:'Physische Inventur verwalten',s:'Zählliste Halbzeug/Fertigcoils',ico:'doc',mod:'MM'},
+      {t:'Materialstamm anzeigen',s:'Güten S355/P265GH, Abmessungen',ico:'doc',mod:'MM'}
+    ]},
+    {space:'logistik',name:'Lager & Logistik',tiles:[
+      {t:'Lageraufgaben verwalten',s:'Ein-/Auslagerung Coils, Schwerlast',kpi:'96',unit:'offen',ico:'box',mod:'EWM'},
+      {t:'Warenausgang bearbeiten',s:'Verladung Coils auf Bahn/LKW',kpi:'24',unit:'heute',ico:'truck',mod:'EWM'},
+      {t:'Anlieferungen überwachen',s:'Avisierte LKW Schrott, Zeitfenster',kpi:'9',unit:'erwartet',ico:'truck',mod:'EWM'},
+      {t:'Lagerplatzbestand anzeigen',s:'Belegung Coil-Lager / Freilager',ico:'box',mod:'EWM'},
+      {t:'Verladung planen',s:'Tourenbildung Auslieferung',ico:'truck',mod:'EWM'}
+    ]},
+    {space:'instandhaltung',name:'Instandhaltung',tiles:[
+      {t:'Instandhaltungsaufträge verwalten',s:'Wartung Walzgerüst/Konverter',kpi:'18',unit:'offen',ico:'wrench',mod:'PM'},
+      {t:'Meldungen erfassen',s:'Störmeldung Walzstraße/Ofen',kpi:'6',unit:'kritisch',ico:'wrench',mod:'PM'},
+      {t:'Wartungsplan überwachen',s:'Vorbeugende Wartung Kräne/Antriebe',ico:'wrench',mod:'PM'},
+      {t:'Technische Plätze anzeigen',s:'Anlagenstruktur Stahl-/Warmwalzwerk',ico:'factory',mod:'PM'},
+      {t:'Equipments verwalten',s:'Aggregate Werk 1200, Ersatzteile',ico:'wrench',mod:'PM'}
+    ]},
+    {space:'finanzen',name:'Finanzen & Controlling',tiles:[
+      {t:'Kreditoren offene Posten',s:'Verbindlichkeiten Rohstofflieferanten',kpi:'3,2',unit:'Mio €',ico:'euro',mod:'FI'},
+      {t:'Debitoren offene Posten',s:'Forderungen Warmband/Blech',kpi:'4,7',unit:'Mio €',ico:'euro',mod:'FI'},
+      {t:'Produktkosten analysieren',s:'Herstellkosten je t nach Güte',kpi:'612',unit:'€/t',ico:'chart',mod:'CO'},
+      {t:'Gemeinkosten überwachen',s:'Kostenstellen Stahl-/Walzwerk',ico:'euro',mod:'CO'},
+      {t:'Ergebnis nach Segmenten',s:'Deckungsbeitrag Coils vs. Blech',ico:'chart',mod:'CO'}
+    ]},
+    {space:'analytics',name:'Meine Aufgaben & Analytics',tiles:[
+      {t:'Meine Eingänge',s:'Freigaben BANF/Aufträge/Zeugnisse',kpi:'9',unit:'Aufgaben',ico:'inbox',mod:'Workflow'},
+      {t:'Manager-Dashboard',s:'Produktion/Qualität/Absatz Werk 1200',kpi:'128k',unit:'t YTD',ico:'chart',mod:'Analytics'},
+      {t:'OEE-Auswertung anzeigen',s:'Anlageneffektivität Walzstraße',kpi:'78',unit:'%',ico:'chart',mod:'Analytics'},
+      {t:'Werkskalender & News',s:'Schichtinfos, Wartungsfenster',ico:'doc',mod:'Info'}
+    ]}
+  ];
+  function renderLaunchpad(){
+    var tabsEl=document.getElementById('lpTabs'), secWrap=document.getElementById('lp-sections');
+    if(!tabsEl||!secWrap) return;
+    tabsEl.innerHTML=LP_TABS.map(function(t,i){ return '<button class="lp-tab'+(i===0?' active':'')+'" data-tab="'+t.id+'">'+t.label+'</button>'; }).join('');
+    secWrap.innerHTML=LAUNCHPAD.map(function(sec){
+      var tiles=sec.tiles.map(function(x){
+        var attrs=x.route?(' data-route="'+x.route+'" data-rec data-rec-label="'+x.t+'"'):'';
+        var kpi=x.kpi?('<span class="tile-kpi"><b>'+x.kpi+'</b>'+(x.unit||'')+'</span>'):'';
+        return '<button class="tile'+(x.route?' live':'')+'"'+attrs+'>'
+          +'<span class="tile-ico">'+(LP_ICONS[x.ico]||LP_ICONS.doc)+'</span>'
+          +'<span class="tile-mod">'+x.mod+'</span>'
+          +'<span class="tile-title">'+x.t+'</span>'
+          +'<span class="tile-sub">'+x.s+'</span>'+kpi+'</button>';
+      }).join('');
+      return '<div class="lp-section" data-space="'+sec.space+'"><div class="lp-sec-head">'+sec.name+'</div><div class="lp-grid">'+tiles+'</div></div>';
+    }).join('');
+    tabsEl.querySelectorAll('.lp-tab').forEach(function(b){
+      b.addEventListener('click',function(){
+        tabsEl.querySelectorAll('.lp-tab').forEach(function(x){ x.classList.remove('active'); });
+        b.classList.add('active');
+        var tab=LP_TABS.filter(function(x){ return x.id===b.getAttribute('data-tab'); })[0];
+        secWrap.querySelectorAll('.lp-section').forEach(function(s){
+          s.hidden = tab.spaces ? (tab.spaces.indexOf(s.getAttribute('data-space'))<0) : false;
+        });
+      });
+    });
+  }
+  renderLaunchpad();
+  /* Kachel-Klick (delegiert, wegen dynamischer Kacheln) */
+  document.getElementById('app-home').addEventListener('click',function(e){
+    var t=e.target.closest('.tile'); if(!t) return;
+    var r=t.getAttribute('data-route');
+    if(r){ navigate(r); } else { showToast('Diese App ist in der Demo nicht hinterlegt.'); }
   });
   navigate('Shell-home');
 
