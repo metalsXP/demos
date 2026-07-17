@@ -282,7 +282,10 @@
   .r-steps{margin:0 10px 10px;background:#f3f4f6;border-radius:12px;padding:8px;min-height:120px;max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:7px}
   .r-step{background:#fff;border-radius:8px;border-left:4px solid #2B3A47;display:flex;align-items:center;gap:9px;padding:9px 11px;box-shadow:0 1px 4px rgba(21,35,49,.1);font-size:.8rem;color:#1A2332;opacity:0;transform:translateY(8px) scale(.98);transition:opacity .3s,transform .3s}
   .r-step.show{opacity:1;transform:none}
-  .r-step.active{border-left-color:var(--ds-secondary);background:#faf5f9}
+  /* Replay-Status (aus StepItem.module.css): pending = blau + Puls, done = grün */
+  .r-step.pending{border-left:4px solid var(--ds-primary);animation:pulseBorder 1.5s ease-in-out infinite}
+  .r-step.done{border-left:4px solid #A1B977}
+  @keyframes pulseBorder{0%,100%{border-left-width:4px}50%{border-left-width:7px}}
   .r-step svg.st-ico{width:15px;height:15px;color:#3C4653;flex-shrink:0}
   .r-step .st-txt{flex:1;overflow:hidden}
   .r-step .st-main{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -839,7 +842,15 @@
   }
   function highlightStep(i,on){
     var el=stepsEl.querySelector('[data-i="'+i+'"]');
-    if(el) el.classList.toggle('active',on);
+    if(!el) return;
+    if(on){
+      el.classList.add('pending'); el.classList.remove('done');
+      // aktuellen Step im Fokus halten — Scrollbalken läuft mit
+      var top=el.offsetTop - stepsEl.clientHeight/2 + el.clientHeight/2;
+      stepsEl.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+    } else {
+      el.classList.remove('pending'); el.classList.add('done');
+    }
   }
 
   var replaying=false;
@@ -847,15 +858,17 @@
     if(replaying || steps.length===0) return;
     replaying=true; if(recording) setRecording(false);
     replayBtn.disabled=true;
-    navigate('PurchaseOrder-manage'); await sleep(300); // App-Route öffnen
-    // reset table + filters to a clean state
-    supEl.value=''; statEl.value=''; filterSup=''; filterStat=''; resetTable();
-    document.querySelectorAll('.frow.sel,.frow.hit').forEach(function(r){r.classList.remove('sel','hit');});
+    stepsEl.querySelectorAll('.r-step').forEach(function(e){ e.classList.remove('pending','done'); });
+    var hasPO=steps.some(function(s){ return s.po||s.fill; });
+    if(hasPO){ navigate('PurchaseOrder-manage'); await sleep(300);
+      supEl.value=''; statEl.value=''; filterSup=''; filterStat=''; resetTable();
+      document.querySelectorAll('.frow.sel,.frow.hit').forEach(function(r){r.classList.remove('sel','hit');});
+    }
     await sleep(400);
 
     for(var i=0;i<steps.length;i++){
       var s=steps[i]; highlightStep(i,true);
-      if(s.assert||s.nav||s.loaded){ await sleep(220); highlightStep(i,false); continue; }
+      if(s.assert||s.nav||s.loaded){ await sleep(Math.random()<0.15?(600+Math.random()*750):(150+Math.random()*300)); highlightStep(i,false); await sleep(50+Math.random()*120); continue; }
       if(s.grid){
         var grt=s.grid.route||'QPPD-manage'; navigate(grt); await sleep(300);
         var gapp=grt==='SalesOrder-va01'?'#app-va01':'#app-qppd';
@@ -1007,14 +1020,14 @@
     chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>'
   };
   var LP_TABS=[
-    {id:'home',label:'Home',spaces:null},
+    {id:'home',label:'Home',spaces:['favoriten']},
     {id:'einkauf',label:'Einkauf',spaces:['einkauf']},
     {id:'vertrieb',label:'Vertrieb',spaces:['vertrieb']},
     {id:'produktion',label:'Produktion',spaces:['produktion']},
     {id:'qualitaet',label:'Qualität',spaces:['qualitaet']},
     {id:'logistik',label:'Bestand & Logistik',spaces:['bestand','logistik']},
     {id:'instandhaltung',label:'Instandhaltung',spaces:['instandhaltung']},
-    {id:'finanzen',label:'Finanzen',spaces:['finanzen']}
+    {id:'finanzen',label:'Finanzen',spaces:['finanzen','analytics']}
   ];
   var LAUNCHPAD=[
     {space:'favoriten',name:'Schnellzugriff',tiles:[
@@ -1106,16 +1119,19 @@
       }).join('');
       return '<div class="lp-section" data-space="'+sec.space+'"><div class="lp-sec-head">'+sec.name+'</div><div class="lp-grid">'+tiles+'</div></div>';
     }).join('');
+    function applyTab(tab){
+      secWrap.querySelectorAll('.lp-section').forEach(function(s){
+        s.hidden = tab.spaces ? (tab.spaces.indexOf(s.getAttribute('data-space'))<0) : false;
+      });
+    }
     tabsEl.querySelectorAll('.lp-tab').forEach(function(b){
       b.addEventListener('click',function(){
         tabsEl.querySelectorAll('.lp-tab').forEach(function(x){ x.classList.remove('active'); });
         b.classList.add('active');
-        var tab=LP_TABS.filter(function(x){ return x.id===b.getAttribute('data-tab'); })[0];
-        secWrap.querySelectorAll('.lp-section').forEach(function(s){
-          s.hidden = tab.spaces ? (tab.spaces.indexOf(s.getAttribute('data-space'))<0) : false;
-        });
+        applyTab(LP_TABS.filter(function(x){ return x.id===b.getAttribute('data-tab'); })[0]);
       });
     });
+    applyTab(LP_TABS[0]); // Initialansicht: nur Schnellzugriff
   }
   renderLaunchpad();
   /* Kachel-Klick (delegiert, wegen dynamischer Kacheln) */
