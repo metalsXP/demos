@@ -60,7 +60,7 @@
   .bext-pin svg,.bext-pin img{width:19px;height:19px;object-fit:contain;display:block}
   .bext-ic{color:#5b6b7a}.bext-ic svg{width:17px;height:17px}
   .bext-avatar{width:24px;height:24px;border-radius:50%;background:var(--ds-primary);color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 3px}
-  .bext-pin.on{background:#e3effd}
+  .bext-pin.on{background:transparent}
   /* Extension-Popup beim Klick aufs angepinnte Icon */
   .ext-popup{position:absolute;top:46px;right:10px;z-index:60;width:236px;background:#fff;border-radius:10px;
     box-shadow:0 8px 30px rgba(21,35,49,.28),0 2px 8px rgba(21,35,49,.12);border:1px solid #e4e7ea;padding:14px;
@@ -599,9 +599,6 @@
         <button class="replay" id="replay" disabled>
           <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg> Replay
         </button>
-        <button class="clear" id="clear" title="Leeren">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-        </button>
       </div>
       <div class="r-footer">
         <span class="r-reload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Reload: On</span>
@@ -815,7 +812,7 @@
   redoBtn.addEventListener('click',function(){ if(redoStack.length){ undoStack.push(JSON.stringify(steps)); steps=JSON.parse(redoStack.pop()); renderSteps(); } });
   // Delete/Clear = alle Steps leeren (per Undo wiederherstellbar)
   document.getElementById('delvvlast').addEventListener('click',function(){ if(steps.length){ snapshot(); steps=[]; renderSteps(); } });
-  document.getElementById('clear').addEventListener('click',function(){ if(steps.length){ snapshot(); steps=[]; renderSteps(); } });
+  var _clr=document.getElementById('clear'); if(_clr) _clr.addEventListener('click',function(){ if(steps.length){ snapshot(); steps=[]; renderSteps(); } });
 
   /* ─────────── replay ─────────── */
   var cursor=document.getElementById('cursor'), pulse=document.getElementById('pulse'), toast=document.getElementById('toast');
@@ -1213,6 +1210,12 @@
     renderSteps();
     if(window.__recSwitchTab) window.__recSwitchTab('record');
     if(test.route) navigate(test.route);
+    if(id==='qppd-multitab'){ // eigener Marketing-Satz (Multi-Tab statt Spec)
+      var _e=document.getElementById('mkEyebrow'),_h=document.getElementById('mkH1'),_p=document.getElementById('mkP');
+      if(_e) _e.innerHTML='Multi-Tab-Aufnahme · Tab 1 ↔ Tab 2';
+      if(_h) _h.textContent='Zwei SAP-Sessions, ein Test.';
+      if(_p) _p.innerHTML='Prozesse, die über <b>mehrere Browser-Tabs</b> laufen, nimmt pulseXP als einen zusammenhängenden Test auf — der Tab-Wechsel wird als eigener Schritt erfasst. Generische Recorder verlieren beim Kontextwechsel den Faden.';
+    }
     showToast('Test geladen: '+test.name+' ('+test.steps.length+' Steps)');
   }
 
