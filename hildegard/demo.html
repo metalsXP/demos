@@ -227,11 +227,11 @@
   .rec-toggle.on{background:#fdeaec;color:var(--ds-alert)}
   .rec-toggle.on .dot{background:var(--ds-alert);animation:recpulse 1.3s ease-in-out infinite}
   @keyframes recpulse{0%,100%{opacity:1}50%{opacity:.3}}
-  .r-desc{padding:0 14px 10px;font-size:.76rem;color:#7E777C;line-height:1.45}
-  .r-steps-label{padding:0 14px 6px;font-size:.78rem;font-weight:700;color:#1A2332;display:flex;justify-content:space-between}
+  .r-desc{padding:0 14px 10px;font-size:.8rem;color:#7E777C;line-height:1.4}
+  .r-steps-label{padding:2px 14px 6px;font-size:.9rem;font-weight:500;color:#1A2332;display:flex;justify-content:space-between;align-items:center}
   .r-steps-label .live{color:var(--ds-alert);font-size:.68rem;font-weight:800;opacity:0}
   .rec-on .r-steps-label .live{opacity:1}
-  .r-steps{margin:0 10px 10px;background:var(--rec-steps-bg);border-radius:10px;padding:9px;min-height:120px;max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:7px}
+  .r-steps{margin:0 10px 10px;background:#f3f4f6;border-radius:12px;padding:8px;min-height:120px;max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:7px}
   .r-step{background:#fff;border-radius:8px;border-left:4px solid #2B3A47;display:flex;align-items:center;gap:9px;padding:9px 11px;box-shadow:0 1px 4px rgba(21,35,49,.1);font-size:.8rem;color:#1A2332;opacity:0;transform:translateY(8px) scale(.98);transition:opacity .3s,transform .3s}
   .r-step.show{opacity:1;transform:none}
   .r-step.active{border-left-color:var(--ds-secondary);background:#faf5f9}
@@ -241,7 +241,7 @@
   .r-step .st-sel{display:block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.64rem;color:var(--ds-primary);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .r-step .st-del{color:#c4ccd3;cursor:pointer;flex-shrink:0}.r-step .st-del:hover{color:var(--ds-alert)}
   .r-step .st-del svg{width:13px;height:13px;display:block}
-  .r-empty{flex-grow:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.78rem;color:#9AA4AD;padding:16px}
+  .r-empty{flex-grow:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.82rem;color:#7E777C;padding:2rem 16px}
   .r-footer{display:flex;align-items:center;padding:11px 14px;border-top:1px solid #EDEFF1;gap:8px;background:#f8fafc}
   .r-reload{display:flex;align-items:center;gap:6px;font-size:.78rem;color:#3C4653;font-weight:600}
   .r-reload svg{width:14px;height:14px;color:var(--ds-success-title)}
@@ -471,9 +471,9 @@
         <h4>Record Process</h4>
         <button class="rec-toggle" id="rec-toggle"><span class="dot"></span><span id="rec-label">Record</span></button>
       </div>
-      <div class="r-desc">Drücken Sie <b>Record</b> und interagieren Sie mit dem SAP-Fenster. Jede Aktion wird live erfasst — mit stabilem Selektor.</div>
-      <div class="r-steps-label"><span>Steps</span><span class="live">● LIVE</span></div>
-      <div class="r-steps" id="steps"><div class="r-empty">Noch keine Schritte. Record drücken und im SAP-Fenster klicken.</div></div>
+      <div class="r-desc">Record, assert and validate your process here. Every process needs at least one URL navigation.</div>
+      <div class="r-steps-label"><span>Steps</span><span class="live">● REC</span></div>
+      <div class="r-steps" id="steps"><div class="r-empty">No steps recorded yet. Start recording to see your process steps here!</div></div>
       <div class="r-play">
         <button class="replay" id="replay" disabled>
           <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg> Replay
@@ -608,7 +608,7 @@
   var replayBtn=document.getElementById('replay'), undoBtn=document.getElementById('undo'), redoBtn=document.getElementById('redo');
 
   function renderSteps(){
-    if(steps.length===0){ stepsEl.innerHTML='<div class="r-empty">Noch keine Schritte. Record drücken und im SAP-Fenster klicken.</div>'; }
+    if(steps.length===0){ stepsEl.innerHTML='<div class="r-empty">No steps recorded yet. Start recording to see your process steps here!</div>'; }
     else{
       stepsEl.innerHTML='';
       steps.forEach(function(s,idx){
