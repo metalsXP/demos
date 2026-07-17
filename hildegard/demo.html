@@ -283,9 +283,14 @@
   .r-step{background:#fff;border-radius:8px;border-left:4px solid #2B3A47;display:flex;align-items:center;gap:9px;padding:9px 11px;box-shadow:0 1px 4px rgba(21,35,49,.1);font-size:.8rem;color:#1A2332;opacity:0;transform:translateY(8px) scale(.98);transition:opacity .3s,transform .3s}
   .r-step.show{opacity:1;transform:none}
   /* Replay-Status (aus StepItem.module.css): pending = blau + Puls, done = grün */
-  .r-step.pending{border-left:4px solid var(--ds-primary);animation:pulseBorder 1.5s ease-in-out infinite}
-  .r-step.done{border-left:4px solid #A1B977}
-  @keyframes pulseBorder{0%,100%{border-left-width:4px}50%{border-left-width:7px}}
+  .r-step.pending{border-left:5px solid var(--ds-primary);background:#eef4fa;animation:pulseBorder 1.4s ease-in-out infinite}
+  .r-step.done{border-left:5px solid #6f9c3f;background:#eef6e1;animation:doneFlash .55s ease}
+  @keyframes pulseBorder{0%,100%{border-left-width:5px}50%{border-left-width:9px}}
+  @keyframes doneFlash{0%{background:#cbe3a4}100%{background:#eef6e1}}
+  .r-play .replay.stopmode{background:var(--ds-alert)}
+  .r-play .replay.stopmode:hover{background:#d64d5c}
+  .r-play .replay .spin{animation:spin360 .8s linear infinite;transform-origin:center}
+  @keyframes spin360{to{transform:rotate(360deg)}}
   .r-step svg.st-ico{width:15px;height:15px;color:#3C4653;flex-shrink:0}
   .r-step .st-txt{flex:1;overflow:hidden}
   .r-step .st-main{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -853,11 +858,15 @@
     }
   }
 
-  var replaying=false;
+  var replaying=false, stopRequested=false;
+  var REPLAY_HTML='<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg> Replay';
+  var STOP_HTML='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> Stop';
+  var STOPPING_HTML='<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.2-8.5"/></svg> Stopping…';
   replayBtn.addEventListener('click',async function(){
-    if(replaying || steps.length===0) return;
-    replaying=true; if(recording) setRecording(false);
-    replayBtn.disabled=true;
+    if(replaying){ stopRequested=true; replayBtn.innerHTML=STOPPING_HTML; return; }
+    if(steps.length===0) return;
+    replaying=true; stopRequested=false; if(recording) setRecording(false);
+    replayBtn.classList.add('stopmode'); replayBtn.innerHTML=STOP_HTML;
     stepsEl.querySelectorAll('.r-step').forEach(function(e){ e.classList.remove('pending','done'); });
     var hasPO=steps.some(function(s){ return s.po||s.fill; });
     if(hasPO){ navigate('PurchaseOrder-manage'); await sleep(300);
@@ -867,6 +876,7 @@
     await sleep(400);
 
     for(var i=0;i<steps.length;i++){
+      if(stopRequested) break;
       var s=steps[i]; highlightStep(i,true);
       if(s.assert||s.nav||s.loaded){ await sleep(Math.random()<0.15?(600+Math.random()*750):(150+Math.random()*300)); highlightStep(i,false); await sleep(50+Math.random()*120); continue; }
       if(s.grid){
@@ -900,8 +910,9 @@
       await sleep(650); highlightStep(i,false);
     }
     cursor.style.opacity='0';
-    showToast('Replay abgeschlossen — Zielzeile stabil wiedergefunden ✓');
-    replaying=false; replayBtn.disabled=false;
+    replayBtn.classList.remove('stopmode'); replayBtn.innerHTML=REPLAY_HTML;
+    showToast(stopRequested ? 'Replay gestoppt' : 'Replay abgeschlossen — Zielzeile stabil wiedergefunden ✓');
+    replaying=false; stopRequested=false;
   });
 
   /* ─────────── drag ─────────── */
