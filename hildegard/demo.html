@@ -61,6 +61,19 @@
   .bext-ic{color:#5b6b7a}.bext-ic svg{width:17px;height:17px}
   .bext-avatar{width:24px;height:24px;border-radius:50%;background:var(--ds-primary);color:#fff;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 3px}
   .bext-pin.on{background:#e3effd}
+  /* Extension-Popup beim Klick aufs angepinnte Icon */
+  .ext-popup{position:absolute;top:46px;right:10px;z-index:60;width:236px;background:#fff;border-radius:10px;
+    box-shadow:0 8px 30px rgba(21,35,49,.28),0 2px 8px rgba(21,35,49,.12);border:1px solid #e4e7ea;padding:14px;
+    font-family:'Roboto',Arial,sans-serif;animation:extpop .16s ease}
+  .ext-popup[hidden]{display:none}
+  .ext-popup::before{content:"";position:absolute;top:-7px;right:19px;width:12px;height:12px;background:#fff;
+    border-left:1px solid #e4e7ea;border-top:1px solid #e4e7ea;transform:rotate(45deg)}
+  @keyframes extpop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .ext-popup .ep-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .ext-popup .ep-head img{width:26px;height:26px;border-radius:6px;display:block}
+  .ext-popup .ep-head b{font-size:.9rem;color:#1d2d3e}
+  .ext-popup p{font-size:.8rem;color:#556b82;line-height:1.45;margin:0}
+  .ext-popup .ep-note{margin-top:9px;font-size:.7rem;color:#8a97a3;border-top:1px solid #eef1f4;padding-top:8px;line-height:1.4}
 
   /* ── Fiori Horizon shell ── */
   .fiori{font-family:"72","72full","Inter",Arial,Helvetica,sans-serif;background:var(--fi-bg);color:var(--fi-text)}
@@ -300,6 +313,11 @@
   <x-pw-highlight id="pwHl"></x-pw-highlight>
   <x-pw-tooltip id="pwTt"><x-pw-tooltip-line id="pwTtLine"></x-pw-tooltip-line></x-pw-tooltip>
   <x-pw-action-point id="pwAp"></x-pw-action-point>
+  <div class="ext-popup" id="extPopup" hidden>
+    <div class="ep-head"><img src="hildegard-icon.svg" alt=""><b>pulseXP Recorder</b></div>
+    <p>Hier aktivieren Sie normalerweise den pulseXP Recorder <b>„Hildegard"</b> für diese SAP-Seite.</p>
+    <div class="ep-note">In dieser Demo läuft der Recorder bereits — probieren Sie die Overlay-Toolbar direkt aus.</div>
+  </div>
   <div class="bchrome">
     <div class="bdots"><i></i><i></i><i></i></div>
     <div class="burl">
@@ -307,7 +325,7 @@
       https://s4hana.acme.corp/ui#PurchaseOrder-manage
     </div>
     <div class="bexts">
-      <span class="bext-pin on" id="pwExtPin" title="pulseXP Recorder (angepinnt)">
+      <span class="bext-pin on" id="pwExtPin" title="pulseXP Recorder „Hildegard“ — klicken" style="cursor:pointer">
         <img src="hildegard-icon.svg" alt="pulseXP Recorder">
       </span>
       <span class="bext-ic" title="Erweiterungen verwalten">
@@ -752,6 +770,16 @@
   pwGrip.addEventListener('pointerup',pwEndDrag); pwGrip.addEventListener('pointercancel',pwEndDrag);
 
   renderSteps();
+})();
+</script>
+<script>
+/* Klick aufs angepinnte Extension-Icon → Popup */
+(function(){
+  var pin=document.getElementById('pwExtPin'), pop=document.getElementById('extPopup');
+  if(!pin||!pop) return;
+  pin.addEventListener('click',function(e){ e.stopPropagation(); pop.hidden=!pop.hidden; });
+  document.addEventListener('click',function(e){ if(!pop.hidden && !pop.contains(e.target) && !pin.contains(e.target)) pop.hidden=true; });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') pop.hidden=true; });
 })();
 </script>
 </body>
