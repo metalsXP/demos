@@ -364,9 +364,9 @@
 
 <div class="wrap intro">
   <a href="./index.html" style="display:inline-block;margin-bottom:10px;color:#3B5E78;text-decoration:none;font-size:.85rem;font-weight:600">← Zurück zur Übersicht</a>
-  <span style="display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A5679C;margin-bottom:6px">Der Härtefall · Lazy-Loading-Tabellen</span>
-  <h1>Prüfen, was noch gar nicht geladen ist.</h1>
-  <p>SAP-Tabellen in Fiori und QPPD laden ihre Zeilen <b>virtualisiert</b> nach — was nicht sichtbar ist, existiert im DOM nicht. Wollen Sie beim Aufnehmen eine bestimmte Charge oder Bestellung prüfen, steht sie oft noch gar nicht auf der Seite. Generische Recorder verlieren sie. pulseXP erfasst die Zielzeile über <b>SAP-Semantik</b> (Zeile per Spaltenwert, nicht per Position) und findet sie beim Replay stabil wieder. Nehmen Sie es unten selbst auf — der Recorder rechts ist frei ziehbar.</p>
+  <span id="mkEyebrow" style="display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#A5679C;margin-bottom:6px">Der Härtefall · Lazy-Loading-Tabellen</span>
+  <h1 id="mkH1">Prüfen, was noch gar nicht geladen ist.</h1>
+  <p id="mkP">SAP-Tabellen in Fiori und QPPD laden ihre Zeilen <b>virtualisiert</b> nach — was nicht sichtbar ist, existiert im DOM nicht. Wollen Sie beim Aufnehmen eine bestimmte Charge oder Bestellung prüfen, steht sie oft noch gar nicht auf der Seite. Generische Recorder verlieren sie. pulseXP erfasst die Zielzeile über <b>SAP-Semantik</b> (Zeile per Spaltenwert, nicht per Position) und findet sie beim Replay stabil wieder. Nehmen Sie es unten selbst auf — der Recorder rechts ist frei ziehbar.</p>
   <div class="hintbar">
     <span class="hint"><span class="n">1</span> Recorder an der Titelleiste <b>ziehen</b></span>
     <span class="hint"><span class="n">2</span> <b>Record</b> drücken</span>
@@ -746,7 +746,8 @@
   };
 
   /* ─────────── recording ─────────── */
-  var steps=[], redoStack=[], recording=false;
+  var steps=[], redoStack=[], undoStack=[], recording=false;
+  function snapshot(){ undoStack.push(JSON.stringify(steps)); if(undoStack.length>60) undoStack.shift(); redoStack=[]; }
   var stepsEl=document.getElementById('steps'), toggleBtn=document.getElementById('rec-toggle'), recLabel=document.getElementById('rec-label');
   var replayBtn=document.getElementById('replay'), undoBtn=document.getElementById('undo'), redoBtn=document.getElementById('redo');
 
@@ -757,18 +758,18 @@
       steps.forEach(function(s,idx){
         var el=document.createElement('div'); el.className='r-step show'; el.dataset.i=idx;
         el.innerHTML=ICONS[s.ico]
-          +'<span class="st-txt"><span class="st-main">'+s.txt+'</span><span class="st-sel">'+s.sel+'</span></span>'
+          +'<span class="st-txt"><span class="st-main">'+s.txt+'</span>'+(s.sel?'<span class="st-sel">'+s.sel+'</span>':'')+'</span>'
           +'<span class="st-del" title="Schritt löschen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg></span>';
-        el.querySelector('.st-del').addEventListener('click',function(e){ e.stopPropagation(); steps.splice(idx,1); redoStack=[]; renderSteps(); });
+        el.querySelector('.st-del').addEventListener('click',function(e){ e.stopPropagation(); snapshot(); steps.splice(idx,1); renderSteps(); });
         stepsEl.appendChild(el);
       });
       stepsEl.scrollTop=stepsEl.scrollHeight;
     }
     replayBtn.disabled=steps.length===0;
-    undoBtn.disabled=steps.length===0;
+    undoBtn.disabled=undoStack.length===0;
     redoBtn.disabled=redoStack.length===0;
   }
-  function addStep(s){ steps.push(s); redoStack=[]; renderSteps(); }
+  function addStep(s){ snapshot(); steps.push(s); renderSteps(); }
 
   function setRecording(on){
     recording=on;
@@ -809,10 +810,12 @@
     });
   });
 
-  undoBtn.addEventListener('click',function(){ if(steps.length){ redoStack.push(steps.pop()); renderSteps(); } });
-  redoBtn.addEventListener('click',function(){ if(redoStack.length){ steps.push(redoStack.pop()); renderSteps(); } });
-  document.getElementById('delvvlast').addEventListener('click',function(){ if(steps.length){ steps.pop(); redoStack=[]; renderSteps(); } });
-  document.getElementById('clear').addEventListener('click',function(){ steps=[]; redoStack=[]; renderSteps(); });
+  // Undo = letzte Aktion rückgängig (auch Löschungen wiederherstellen) · Redo = wieder anwenden
+  undoBtn.addEventListener('click',function(){ if(undoStack.length){ redoStack.push(JSON.stringify(steps)); steps=JSON.parse(undoStack.pop()); renderSteps(); } });
+  redoBtn.addEventListener('click',function(){ if(redoStack.length){ undoStack.push(JSON.stringify(steps)); steps=JSON.parse(redoStack.pop()); renderSteps(); } });
+  // Delete/Clear = alle Steps leeren (per Undo wiederherstellbar)
+  document.getElementById('delvvlast').addEventListener('click',function(){ if(steps.length){ snapshot(); steps=[]; renderSteps(); } });
+  document.getElementById('clear').addEventListener('click',function(){ if(steps.length){ snapshot(); steps=[]; renderSteps(); } });
 
   /* ─────────── replay ─────────── */
   var cursor=document.getElementById('cursor'), pulse=document.getElementById('pulse'), toast=document.getElementById('toast');
@@ -1006,12 +1009,22 @@
     'SalesOrder-va01':{title:'Kundenauftrag anlegen (VA01)',app:'app-va01'}
   };
   var burlUrl=document.getElementById('burl-url'), ftitleEl=document.getElementById('ftitle'), sapBack=document.getElementById('sap-back');
+  /* Marketing-Text über dem Browser pro Use-Case */
+  var MARKETING={
+    'Shell-home':{e:'Record &amp; Replay für SAP',h:'Aufnehmen statt programmieren.',p:'Klicken Sie einen SAP-Prozess einmal durch — pulseXP macht daraus einen wiederholbaren Test mit Video-Nachweis. Wählen Sie unten eine App und nehmen Sie direkt auf, oder laden Sie einen fertigen Test aus dem Portal-Repository (Recorder → Tab „Tests").'},
+    'PurchaseOrder-manage':{e:'Der Härtefall · Lazy-Loading-Tabellen',h:'Prüfen, was noch gar nicht geladen ist.',p:'SAP-Tabellen laden ihre Zeilen <b>virtualisiert</b> nach — was nicht sichtbar ist, existiert im DOM nicht. pulseXP erfasst die Zielzeile über <b>SAP-Semantik</b> (Zeile per Spaltenwert, nicht per Position) und findet sie beim Replay stabil wieder — egal, an welcher Scroll-Position sie nachlädt.'},
+    'QPPD-manage':{e:'QPPD · Value Help · Merkmale',h:'Tiefe SAP-Dialoge, stabil aufgenommen.',p:'Spezifikationen mit Value-Help (F4), Routing und Merkmalen sind für generische Recorder ein Minenfeld dynamischer IDs. pulseXP adressiert Grid-Zellen semantisch — <b>row:Element=…|col:Value</b> — reproduzierbar über alle Schritte hinweg.'},
+    'SalesOrder-va01':{e:'Kundenauftrag · VA01',h:'Belegprozesse, die sich selbst testen.',p:'Auftragskopf, Partnerfindung, Positionen: pulseXP nimmt den kompletten VA01-Prozess einmal auf und spielt ihn reproduzierbar ab — Feld für Feld über stabile SAP-GUI-Selektoren (<b>sid=…</b>).'}
+  };
   function navigate(route){
     var r=ROUTES[route]||ROUTES['Shell-home'];
     document.querySelectorAll('.sap-app').forEach(function(a){ a.hidden = (a.id!==r.app); });
     ftitleEl.textContent=r.title;
     if(burlUrl) burlUrl.textContent='https://s4hana.acme.corp/ui#'+route;
     if(sapBack) sapBack.hidden = (route==='Shell-home');
+    var mk=MARKETING[route];
+    if(mk){ var mE=document.getElementById('mkEyebrow'),mH=document.getElementById('mkH1'),mP=document.getElementById('mkP');
+      if(mE) mE.innerHTML=mk.e; if(mH) mH.textContent=mk.h; if(mP) mP.innerHTML=mk.p; }
     if(typeof pwHide==='function') pwHide();
   }
   document.getElementById('sap-home').addEventListener('click',function(){ navigate('Shell-home'); });
@@ -1185,7 +1198,7 @@
       var rows=tests.map(function(t){
         return '<div class="repo-test"><div class="spec"><div class="fn">'+t.id+'.spec.ts</div><div class="meta">'+t.steps.length+' Steps &middot; '+t.mod+'</div></div><button class="load" data-load="'+t.id+'">Load</button></div>';
       }).join('');
-      html+='<div class="repo-folder'+(i===0?' open':'')+'"><div class="repo-folder-row">'+chev+foldSvg+fn+'<span class="cnt">'+tests.length+'</span></div><div class="repo-tests">'+rows+'</div></div>';
+      html+='<div class="repo-folder open"><div class="repo-folder-row">'+chev+foldSvg+fn+'<span class="cnt">'+tests.length+'</span></div><div class="repo-tests">'+rows+'</div></div>';
     });
     tree.innerHTML=html;
     tree.querySelectorAll('.repo-folder-row').forEach(function(row){ row.addEventListener('click',function(){ row.parentElement.classList.toggle('open'); }); });
@@ -1195,8 +1208,9 @@
   function loadTest(id){
     var test=REPO_TESTS.filter(function(t){ return t.id===id; })[0]; if(!test) return;
     if(recording) setRecording(false);
+    snapshot();
     steps=test.steps.map(function(s){ return {ico:s.ico,txt:s.txt,loaded:true}; });
-    redoStack=[]; renderSteps();
+    renderSteps();
     if(window.__recSwitchTab) window.__recSwitchTab('record');
     if(test.route) navigate(test.route);
     showToast('Test geladen: '+test.name+' ('+test.steps.length+' Steps)');
