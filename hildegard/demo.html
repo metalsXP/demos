@@ -175,6 +175,27 @@
   .tile-kpi b{font-size:1.4rem;font-weight:800;color:var(--fi-brand);line-height:1;margin-right:5px}
   .tile.live{border-color:var(--fi-brand);box-shadow:0 0 0 1px var(--fi-brand)}
   .tile.live .tile-ico{background:var(--fi-brand);color:#fff}
+  /* QPPD-Screen (ALV-Grids) */
+  #app-qppd{padding:16px 20px}
+  .qppd-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .qppd-btn{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;color:#fff;background:var(--fi-brand);border-radius:7px;padding:7px 14px;cursor:pointer}
+  .qppd-btn svg{width:14px;height:14px}
+  .qppd-btn.ghost{background:#fff;color:var(--fi-brand);border:1px solid #a9b4be}
+  .qppd-crumb{margin-left:auto;font-size:.8rem;color:var(--fi-text-2)}
+  .qppd-crumb b{color:var(--fi-text)}
+  .qppd-sec{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--fi-text-2);margin:16px 0 6px}
+  table.qppd-grid{width:100%;border-collapse:collapse;font-size:.8rem;border:1px solid #d9dee3;background:#fff;border-radius:8px;overflow:hidden}
+  .qppd-grid th{text-align:left;background:#eef1f4;color:#556b82;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;padding:8px 12px;border-bottom:1px solid #d9dee3}
+  .qppd-grid td{padding:9px 12px;border-bottom:1px solid #eef1f4;color:var(--fi-text)}
+  .qppd-grid tr:last-child td{border-bottom:none}
+  .qppd-grid td.cell{cursor:pointer}
+  .qppd-grid td.cell:hover{background:var(--fi-hover)}
+  .qppd-grid td.qppd-hit{background:#d7ecd9}
+  .qppd-grid .qs{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:10px;background:#eef1f4;color:#6a6d70}
+  .qppd-grid .qs.ok{background:var(--fi-good-bg);color:var(--fi-good)}
+  .qppd-grid .qs.wait{background:var(--fi-warn-bg);color:var(--fi-warn)}
+  .qppd-note{margin-top:14px;font-size:.72rem;color:#9aa4ad}
+  .qppd-note code{background:#f3f4f6;border-radius:4px;padding:1px 5px;font-size:.9em;color:var(--fi-brand)}
 
   /* recording highlight on targets */
   .rec-on [data-rec]{outline:1.5px dashed rgba(165,103,156,.55);outline-offset:1px;border-radius:4px}
@@ -439,6 +460,38 @@
       <div class="fmore" id="more"><button id="more-btn">Mehr laden …</button></div>
     </div>
     </div><!-- /app-po -->
+
+    <!-- ═══ APP · QPPD Spezifikation (/sct/qppd) ═══ -->
+    <div id="app-qppd" class="sap-app" hidden>
+      <div class="qppd-bar">
+        <span class="qppd-btn" data-rec data-rec-label="Create" title="Create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Create</span>
+        <span class="qppd-btn ghost" data-rec data-rec-label="Routing Overview">Routing Overview</span>
+        <span class="qppd-crumb">Specification: <b>MX_TECHNICAL</b> · TECHO demo with mdVC</span>
+      </div>
+
+      <div class="qppd-sec">Elements</div>
+      <table class="qppd-grid">
+        <thead><tr><th>Element</th><th>Short text</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>MX_PRODUCTSPEC</td><td>Product Specification</td><td class="cell" data-rec data-rec-label="Value" data-grid-row="Element=MX_PRODUCTSPEC" data-grid-col="Value"><b>18749</b></td></tr>
+          <tr><td>MX_DEMANDSPEC</td><td>Demand Specification</td><td class="cell" data-rec data-rec-label="Value" data-grid-row="Element=MX_DEMANDSPEC" data-grid-col="Value"><b>15747</b></td></tr>
+          <tr><td>MX_PACK_LABELCODE</td><td>ALINVEST Default</td><td class="cell" data-rec data-rec-label="Value" data-grid-row="Element=MX_PACK_LABELCODE" data-grid-col="Value">—</td></tr>
+        </tbody>
+      </table>
+
+      <div class="qppd-sec">Routing Overview</div>
+      <table class="qppd-grid">
+        <thead><tr><th>Short text</th><th>Production Status Value</th><th>Prod. Unit 5</th><th>Value (14)</th></tr></thead>
+        <tbody>
+          <tr><td>Casting</td><td class="cell" data-rec data-rec-label="Production Status Value" data-grid-row="Short text=Casting" data-grid-col="Production Status Value"><span class="qs ok">FINISHED</span></td><td>KM</td><td>—</td></tr>
+          <tr><td>Homogenization</td><td class="cell" data-rec data-rec-label="Production Status Value" data-grid-row="Short text=Homogenization" data-grid-col="Production Status Value"><span class="qs ok">FINISHED</span></td><td class="cell" data-rec data-rec-label="Prod. Unit 5" data-grid-row="Short text=Homogenization" data-grid-col="Prod. Unit 5">1234</td><td>—</td></tr>
+          <tr><td>Vertical Saw</td><td class="cell" data-rec data-rec-label="Production Status Value" data-grid-row="Short text=Vertical Saw" data-grid-col="Production Status Value"><span class="qs wait">In Production</span></td><td>—</td><td>—</td></tr>
+          <tr><td>Horizontal Saw</td><td class="cell" data-rec data-rec-label="Production Status Value" data-grid-row="Short text=Horizontal Saw" data-grid-col="Production Status Value"><span class="qs">—</span></td><td>—</td><td class="cell" data-rec data-rec-label="Value (14)" data-grid-row="Short text=Horizontal Saw" data-grid-col="Value (14)">99</td></tr>
+          <tr><td>Milling</td><td class="cell" data-rec data-rec-label="Production Status Value" data-grid-row="Short text=Milling" data-grid-col="Production Status Value"><span class="qs">—</span></td><td class="cell" data-rec data-rec-label="Prod. Unit 5" data-grid-row="Short text=Milling" data-grid-col="Prod. Unit 5">5678</td><td>—</td></tr>
+        </tbody>
+      </table>
+      <div class="qppd-note">Simulierte QPPD-Ansicht (Transaktion /sct/qppd) · Selektoren im echten Engine-Format <code>sapgridcell=…</code></div>
+    </div><!-- /app-qppd -->
   </div>
 </div>
 
@@ -592,6 +645,8 @@
     if(el.id==='f-supplier') return 'sid=wnd[0]/usr/txtSUPPLIER-LOW';
     if(el.id==='f-status')   return 'sid=wnd[0]/usr/txtSTATUS-LOW';
     if(el.id==='f-go')       return 'sid=wnd[0]/tbar[1]/btn[8]';
+    var gr=el.getAttribute && el.getAttribute('data-grid-row'), gc=el.getAttribute && el.getAttribute('data-grid-col');
+    if(gr&&gc) return 'sapgridcell=grid#0|row:'+gr+'|col:'+gc;
     var lbl=el.getAttribute && el.getAttribute('data-rec-label');
     if(el.hasAttribute && el.hasAttribute('data-route')) return 'ui5:GenericTile[header="'+lbl+'"]';
     if(lbl==='Erstellen') return 'sid=wnd[0]/tbar[1]/btn[14]';
@@ -653,6 +708,9 @@
       addStep({ico:'click',txt:"Click 'Erstellen'",sel:genSelector(t)});
     } else if(t.hasAttribute('data-route')){
       addStep({ico:'nav',txt:"Open '"+t.getAttribute('data-rec-label')+"'",sel:genSelector(t),nav:true});
+    } else if(t.getAttribute('data-grid-row')){
+      var grp=t.getAttribute('data-grid-row').split('='), gcol=t.getAttribute('data-grid-col');
+      addStep({ico:'grid',txt:"Click '"+gcol+"' in row where '"+grp[0]+"' = '"+grp[1]+"'",sel:genSelector(t),grid:{row:t.getAttribute('data-grid-row'),col:gcol}});
     }
   },true);
   // capture fills on filter inputs (on change)
@@ -718,6 +776,13 @@
     for(var i=0;i<steps.length;i++){
       var s=steps[i]; highlightStep(i,true);
       if(s.assert||s.nav){ await sleep(250); highlightStep(i,false); continue; }
+      if(s.grid){
+        navigate('QPPD-manage'); await sleep(300);
+        var gcell=document.querySelector('#app-qppd [data-grid-row="'+s.grid.row+'"][data-grid-col="'+s.grid.col+'"]');
+        if(gcell){ gcell.scrollIntoView({behavior:'smooth',block:'center'}); await sleep(500); moveCursorTo(gcell); await sleep(600); pulseAt(gcell);
+          document.querySelectorAll('#app-qppd .qppd-hit').forEach(function(c){c.classList.remove('qppd-hit');}); gcell.classList.add('qppd-hit'); }
+        await sleep(650); highlightStep(i,false); continue;
+      }
       if(s.fill){
         var inp=document.getElementById(s.fill.id);
         inp.scrollIntoView({behavior:'smooth',block:'center'}); await sleep(500);
@@ -830,7 +895,8 @@
   /* ═══ SAP-Shell Router: EIN Fake-SAP, Use Cases = Zustände/Routen ═══ */
   var ROUTES={
     'Shell-home':{title:'Home',app:'app-home'},
-    'PurchaseOrder-manage':{title:'Bestellungen verwalten',app:'app-po'}
+    'PurchaseOrder-manage':{title:'Bestellungen verwalten',app:'app-po'},
+    'QPPD-manage':{title:'QPPD — Spezifikationen',app:'app-qppd'}
   };
   var burlUrl=document.getElementById('burl-url'), ftitleEl=document.getElementById('ftitle'), sapBack=document.getElementById('sap-back');
   function navigate(route){
@@ -874,6 +940,7 @@
       {t:'Kundenaufträge verwalten',s:'Warmband S355/S235',kpi:'63',unit:'offen',ico:'cart',mod:'SD'},
       {t:'Fertigungsaufträge verwalten',s:'Schmelzen · Warmwalzen',kpi:'28',unit:'freigegeben',ico:'factory',mod:'PP'},
       {t:'Prüflose verwalten',s:'Chargenprüfung je Schmelze',kpi:'34',unit:'offen',ico:'check',mod:'QM'},
+      {t:'QPPD — Spezifikationen',s:'Produkt-/Bedarfsspez. · /sct/qppd',kpi:'128',unit:'aktiv',ico:'check',mod:'QM',route:'QPPD-manage'},
       {t:'Bestandsübersicht anzeigen',s:'Coil-/Brammenbestand nach Güte',kpi:'12.400',unit:'t',ico:'box',mod:'MM'},
       {t:'Meine Eingänge',s:'Freigaben BANF / Aufträge / Zeugnisse',kpi:'9',unit:'Aufgaben',ico:'inbox',mod:'Workflow'}
     ]},
@@ -902,6 +969,7 @@
       {t:'Rückmeldungen erfassen',s:'Ist-Mengen / Ausschuss Warmwalzen',ico:'doc',mod:'PP'}
     ]},
     {space:'qualitaet',name:'Qualität & Werkszeugnisse',tiles:[
+      {t:'QPPD — Spezifikationen',s:'Produkt-/Bedarfsspez. · /sct/qppd',kpi:'128',unit:'aktiv',ico:'check',mod:'QM',route:'QPPD-manage'},
       {t:'Prüflose verwalten',s:'Zugversuch/Analyse je Schmelze',kpi:'34',unit:'offen',ico:'check',mod:'QM'},
       {t:'Verwendungsentscheid treffen',s:'Freigabe/Sperre Charge',kpi:'11',unit:'wartend',ico:'check',mod:'QM'},
       {t:'Qualitätsmeldungen verwalten',s:'Reklamationen Oberfläche/Kantenriss',kpi:'7',unit:'offen',ico:'doc',mod:'QM'},
