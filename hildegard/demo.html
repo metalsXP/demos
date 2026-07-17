@@ -140,6 +140,24 @@
   .lazytag{position:absolute;right:12px;bottom:12px;background:rgba(21,35,49,.85);color:#fff;font-size:.7rem;font-weight:600;padding:5px 12px;border-radius:999px;opacity:0;transition:opacity .3s;pointer-events:none}
   .lazytag.show{opacity:1}
   .fempty{padding:26px;text-align:center;color:#9aa4ad;font-size:.85rem}
+  /* ══════════ SAP-Shell Router: Launchpad + Apps ══════════ */
+  .sap-app[hidden]{display:none}
+  #app-home{padding:22px 24px}
+  .lp-head h2{font-size:1.3rem;font-weight:800;color:var(--fi-text)}
+  .lp-head p{font-size:.82rem;color:var(--fi-text-2);margin-top:2px}
+  .lp-group{margin:20px 0 12px;font-size:.76rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--fi-text-2)}
+  .lp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+  .tile{text-align:left;font-family:inherit;background:#fff;border:1px solid var(--fi-line);border-radius:12px;padding:16px;min-height:134px;display:flex;flex-direction:column;cursor:pointer;transition:box-shadow .15s,transform .15s,border-color .15s}
+  .tile:not(.disabled):hover{box-shadow:0 12px 28px rgba(21,35,49,.15);transform:translateY(-3px);border-color:var(--fi-brand)}
+  .tile-ico{width:38px;height:38px;border-radius:9px;background:#eaf1fb;color:var(--fi-brand);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+  .tile-ico svg{width:20px;height:20px}
+  .tile-title{font-size:.95rem;font-weight:700;color:var(--fi-text);line-height:1.25}
+  .tile-sub{font-size:.75rem;color:var(--fi-text-2);margin-top:auto;padding-top:10px}
+  .tile.disabled{opacity:.55;cursor:default;border-style:dashed}
+  .tile.disabled .tile-ico{background:#eef1f4;color:#9aa4ad}
+  .fback{display:inline-flex;align-items:center;color:#5b738b;cursor:pointer}
+  .fback svg{width:18px;height:18px}
+  .fback[hidden]{display:none}
 
   /* recording highlight on targets */
   .rec-on [data-rec]{outline:1.5px dashed rgba(165,103,156,.55);outline-offset:1px;border-radius:4px}
@@ -322,7 +340,7 @@
     <div class="bdots"><i></i><i></i><i></i></div>
     <div class="burl">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      https://s4hana.acme.corp/ui#PurchaseOrder-manage
+      <span id="burl-url">https://s4hana.acme.corp/ui#Shell-home</span>
     </div>
     <div class="bexts">
       <span class="bext-pin on" id="pwExtPin" title="pulseXP Recorder „Hildegard“ — klicken" style="cursor:pointer">
@@ -341,9 +359,10 @@
   <div class="fiori">
     <!-- shell bar -->
     <div class="fshell">
-      <span class="burger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></span>
-      <span class="flogo"><b>SAP</b></span>
-      <span class="ftitle">Bestellungen verwalten</span>
+      <span class="burger" id="sap-home" title="Home" style="cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></span>
+      <span class="flogo" id="sap-logo" style="cursor:pointer"><b>SAP</b></span>
+      <span class="fback" id="sap-back" title="Zurück zur Startseite" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></span>
+      <span class="ftitle" id="ftitle">Home</span>
       <span class="fright">
         <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
         <span class="fic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
@@ -351,6 +370,39 @@
       </span>
     </div>
 
+    <!-- ═══ HOME · Fiori Launchpad ═══ -->
+    <div id="app-home" class="sap-app">
+      <div class="lp-head">
+        <h2>Startseite</h2>
+        <p>Werk 1200 · Demo User · S/4HANA</p>
+      </div>
+      <div class="lp-group">Warenwirtschaft</div>
+      <div class="lp-grid">
+        <button class="tile" data-route="PurchaseOrder-manage" data-rec data-rec-label="Bestellungen verwalten">
+          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 13h8M8 17h6"/></svg></span>
+          <span class="tile-title">Bestellungen verwalten</span>
+          <span class="tile-sub">512 Positionen · Lazy-Table</span>
+        </button>
+        <button class="tile disabled" disabled>
+          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+          <span class="tile-title">Chargenübersicht</span>
+          <span class="tile-sub">geplant</span>
+        </button>
+        <button class="tile disabled" disabled>
+          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+          <span class="tile-title">Wareneingang buchen</span>
+          <span class="tile-sub">geplant</span>
+        </button>
+        <button class="tile disabled" disabled>
+          <span class="tile-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+          <span class="tile-title">Objektseite &amp; F4-Hilfe</span>
+          <span class="tile-sub">geplant</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ APP · Bestellungen verwalten ═══ -->
+    <div id="app-po" class="sap-app" hidden>
     <!-- list report header + filter bar -->
     <div class="flr">
       <div class="flr-title">Bestellungen verwalten</div>
@@ -388,6 +440,7 @@
       <div class="lazytag" id="lazytag">Lazy Loading: Positionen werden nachgeladen …</div>
       <div class="fmore" id="more"><button id="more-btn">Mehr laden …</button></div>
     </div>
+    </div><!-- /app-po -->
   </div>
 </div>
 
@@ -596,6 +649,8 @@
       addStep({ico:'click',txt:"Click 'Start' (Filter anwenden)",sel:genSelector(t)});
     } else if(t.tagName==='SPAN' && t.getAttribute('data-rec-label')==='Erstellen'){
       addStep({ico:'click',txt:"Click 'Erstellen'",sel:genSelector(t)});
+    } else if(t.hasAttribute('data-route')){
+      addStep({ico:'nav',txt:"Open '"+t.getAttribute('data-rec-label')+"'",sel:genSelector(t),nav:true});
     }
   },true);
   // capture fills on filter inputs (on change)
@@ -652,6 +707,7 @@
     if(replaying || steps.length===0) return;
     replaying=true; if(recording) setRecording(false);
     replayBtn.disabled=true;
+    navigate('PurchaseOrder-manage'); await sleep(300); // App-Route öffnen
     // reset table + filters to a clean state
     supEl.value=''; statEl.value=''; filterSup=''; filterStat=''; resetTable();
     document.querySelectorAll('.frow.sel,.frow.hit').forEach(function(r){r.classList.remove('sel','hit');});
@@ -659,7 +715,7 @@
 
     for(var i=0;i<steps.length;i++){
       var s=steps[i]; highlightStep(i,true);
-      if(s.assert){ await sleep(250); highlightStep(i,false); continue; }
+      if(s.assert||s.nav){ await sleep(250); highlightStep(i,false); continue; }
       if(s.fill){
         var inp=document.getElementById(s.fill.id);
         inp.scrollIntoView({behavior:'smooth',block:'center'}); await sleep(500);
@@ -768,6 +824,28 @@
   });
   function pwEndDrag(e){ if(!pwDrag) return; pwDrag=null; pwOverlay.classList.remove('dragging'); try{pwGrip.releasePointerCapture(e.pointerId);}catch(_){} }
   pwGrip.addEventListener('pointerup',pwEndDrag); pwGrip.addEventListener('pointercancel',pwEndDrag);
+
+  /* ═══ SAP-Shell Router: EIN Fake-SAP, Use Cases = Zustände/Routen ═══ */
+  var ROUTES={
+    'Shell-home':{title:'Home',app:'app-home'},
+    'PurchaseOrder-manage':{title:'Bestellungen verwalten',app:'app-po'}
+  };
+  var burlUrl=document.getElementById('burl-url'), ftitleEl=document.getElementById('ftitle'), sapBack=document.getElementById('sap-back');
+  function navigate(route){
+    var r=ROUTES[route]||ROUTES['Shell-home'];
+    document.querySelectorAll('.sap-app').forEach(function(a){ a.hidden = (a.id!==r.app); });
+    ftitleEl.textContent=r.title;
+    if(burlUrl) burlUrl.textContent='https://s4hana.acme.corp/ui#'+route;
+    if(sapBack) sapBack.hidden = (route==='Shell-home');
+    if(typeof pwHide==='function') pwHide();
+  }
+  document.getElementById('sap-home').addEventListener('click',function(){ navigate('Shell-home'); });
+  document.getElementById('sap-logo').addEventListener('click',function(){ navigate('Shell-home'); });
+  if(sapBack) sapBack.addEventListener('click',function(){ navigate('Shell-home'); });
+  document.querySelectorAll('.tile[data-route]').forEach(function(t){
+    t.addEventListener('click',function(){ navigate(t.getAttribute('data-route')); });
+  });
+  navigate('Shell-home');
 
   renderSteps();
 })();
