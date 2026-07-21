@@ -337,7 +337,7 @@
 
   /* ══════════ DRAGGABLE RECORDER PANEL ══════════ */
   .recorder{
-    position:fixed;top:96px;right:26px;width:340px;z-index:9999;
+    position:absolute;top:96px;right:26px;width:340px;z-index:9999;
     background:#fff;border-radius:11px;overflow:hidden;font-size:14px;
     box-shadow:0 26px 60px rgba(21,35,49,.32),0 3px 10px rgba(21,35,49,.16);
     user-select:none;
@@ -1184,14 +1184,13 @@
     dragging=true; handle.classList.add('grabbing');
     var r=rec.getBoundingClientRect();
     offX=e.clientX-r.left; offY=e.clientY-r.top;
-    rec.style.right='auto'; rec.style.left=r.left+'px'; rec.style.top=r.top+'px';
+    rec.style.right='auto'; rec.style.left=(r.left+window.scrollX)+'px'; rec.style.top=(r.top+window.scrollY)+'px';
     handle.setPointerCapture(e.pointerId);
   });
   handle.addEventListener('pointermove',function(e){
     if(!dragging) return;
-    var w=rec.offsetWidth, h=rec.offsetHeight;
-    var x=Math.max(6,Math.min(window.innerWidth-w-6,e.clientX-offX));
-    var y=Math.max(6,Math.min(window.innerHeight-h-6,e.clientY-offY));
+    var x=Math.max(6, e.pageX-offX);
+    var y=Math.max(6, e.pageY-offY);
     rec.style.left=x+'px'; rec.style.top=y+'px';
   });
   handle.addEventListener('pointerup',function(e){ dragging=false; handle.classList.remove('grabbing'); try{handle.releasePointerCapture(e.pointerId);}catch(_){} });
@@ -1499,10 +1498,11 @@
 })();
 </script>
 <script>
-/* Recorder-Panel bleibt fixiert (kein Scroll-Tracking — bewegt sich nicht mit) */
+/* Recorder-Panel: absolute Dokument-Position an Browser 1 — bleibt beim Scrollen dort, wo abgelegt */
 (function(){
-  var rec=document.getElementById('recorder');
-  if(rec) rec.style.top='96px';
+  var rec=document.getElementById('recorder'), br=document.querySelector('.browser');
+  if(!rec||!br||window.innerWidth<=820) return;
+  rec.style.top=(br.getBoundingClientRect().top + window.scrollY + 12)+'px';
 })();
 </script>
 <script>
