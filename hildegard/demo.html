@@ -116,15 +116,16 @@
 
   /* table */
   .ftable{margin:0 12px 12px;border:1px solid var(--fi-line);border-radius:10px;overflow:hidden;background:#fff}
-  .fthead{display:grid;grid-template-columns:1.1fr 1.6fr 1fr .9fr .9fr;background:#f4f6f8;border-bottom:1px solid #dde3e9;padding:10px 16px;font-size:.72rem;font-weight:700;color:var(--fi-text-2);letter-spacing:.02em}
+  .fthead{display:grid;grid-template-columns:1.1fr 1.5fr 1.3fr .95fr 1.05fr;column-gap:14px;background:#f4f6f8;border-bottom:1px solid #dde3e9;padding:10px 16px;font-size:.72rem;font-weight:700;color:var(--fi-text-2);letter-spacing:.02em}
   .fthead .num{text-align:right}
   .fvp{max-height:300px;overflow-y:auto;position:relative;scrollbar-width:thin}
-  .frow{display:grid;grid-template-columns:1.1fr 1.6fr 1fr .9fr .9fr;align-items:center;padding:11px 16px;border-bottom:1px solid #eef1f4;font-size:.82rem;color:var(--fi-text);cursor:pointer;background:#fff;transition:background .12s}
+  .frow{display:grid;grid-template-columns:1.1fr 1.5fr 1.3fr .95fr 1.05fr;column-gap:14px;align-items:center;padding:11px 16px;border-bottom:1px solid #eef1f4;font-size:.82rem;color:var(--fi-text);cursor:pointer;background:#fff;transition:background .12s}
   .frow:hover{background:var(--fi-hover)}
   .frow.sel{background:var(--fi-sel);box-shadow:inset 3px 0 0 var(--fi-brand)}
   .frow.hit{animation:hitflash 1.6s ease}
   @keyframes hitflash{0%{background:#fff}25%{background:#d7ecd9}100%{background:var(--fi-sel)}}
   .frow .po{font-weight:700;color:#0a6ed1}
+  .frow>span,.fthead>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .frow .num{text-align:right;font-variant-numeric:tabular-nums}
   .ostat{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600}
   .ostat .d{width:9px;height:9px;border-radius:50%}
@@ -132,7 +133,7 @@
   .ostat.warn{color:var(--fi-warn)} .ostat.warn .d{background:var(--fi-warn)}
   .ostat.err{color:var(--fi-err)}  .ostat.err .d{background:var(--fi-err)}
   /* skeleton */
-  .fskel{display:grid;grid-template-columns:1.1fr 1.6fr 1fr .9fr .9fr;gap:16px;padding:14px 16px;border-bottom:1px solid #eef1f4}
+  .fskel{display:grid;grid-template-columns:1.1fr 1.5fr 1.3fr .95fr 1.05fr;column-gap:14px;gap:16px;padding:14px 16px;border-bottom:1px solid #eef1f4}
   .fskel i{height:11px;border-radius:6px;background:linear-gradient(90deg,#eef1f4 25%,#f8fafb 50%,#eef1f4 75%);background-size:200% 100%;animation:shimmer 1.1s linear infinite}
   @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   .fmore{padding:10px;text-align:center;border-top:1px solid var(--fi-line);background:#fafbfc}
@@ -282,8 +283,10 @@
   .bext-pin.justadded{animation:pinPulse 1s ease 2}
   @keyframes pinPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 3px rgba(26,115,232,.5)}}
   /* ══════════ Zweiter Browser: Overlay2 · Recorder2 · WebStore2 · Reveal ══════════ */
-  #browser2{margin-top:10px}
+  .b2-wrap{display:flex;gap:14px;align-items:flex-start;max-width:1180px;margin:10px auto 120px;padding:0 28px}
+  #browser2{flex:1 1 auto;min-width:0;max-width:none;margin:0}
   .bext-pin[hidden]{display:none !important}
+  @media(max-width:900px){.b2-wrap{flex-direction:column}#recorder2{align-self:stretch}}
   #pwOverlay2{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:22;background:transparent;pointer-events:auto;font-family:system-ui,"Ubuntu","Droid Sans",sans-serif;color:#333}
   #pwOverlay2 x-pw-tools-list{display:flex;background-color:#ffffffdd;box-shadow:rgba(0,0,0,.1) 0 5px 5px;border-radius:3px}
   #pwOverlay2 x-pw-tool-gripper{height:28px;width:24px;margin:2px 0;display:block}
@@ -299,12 +302,16 @@
   #pwOverlay2 x-pw-tool-item.value>x-div{clip-path:url(#icon-symbol-constant)}
   #pwOverlay2 x-pw-tool-item.capture>x-div{clip-path:url(#icon-capture)}
   #pwOverlay2 x-pw-tool-item.attach-tab>x-div{clip-path:url(#icon-attach-tab)}
-  #recorder2{position:absolute;top:12px;right:14px;width:340px;z-index:20}
+  #recorder2{position:static;flex:0 0 340px;width:340px;align-self:flex-start;z-index:1}
   #recorder2 .r-steps{min-height:80px}
   #webstore2{position:relative;background:#fff;min-height:560px;font-family:'Roboto',Arial,sans-serif;color:#202124}
   #webstore2[hidden]{display:none}
   #ws2-results[hidden]{display:none}
-  .ws-cursor2{position:absolute;width:22px;height:22px;z-index:25;pointer-events:none;opacity:0;transition:left .7s cubic-bezier(.5,0,.3,1),top .7s cubic-bezier(.5,0,.3,1),opacity .25s;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+  .ws-cursor2{position:absolute;width:22px;height:22px;z-index:40;pointer-events:none;opacity:0;transition:left .7s cubic-bezier(.5,0,.3,1),top .7s cubic-bezier(.5,0,.3,1),opacity .25s;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+  .ws-cursor2.tap{animation:wsTap .3s ease}
+  @keyframes wsTap{40%{transform:scale(.62)}100%{transform:scale(1)}}
+  .bext-ic.blink-focus{animation:blinkBlue 1.15s ease-in-out infinite;border-radius:6px}
+  @keyframes blinkBlue{0%,100%{box-shadow:0 0 0 0 rgba(26,115,232,0);color:#5b6b7a}50%{box-shadow:0 0 0 3px rgba(26,115,232,.6);color:#1a73e8}}
   .ob-reveal{animation:obFade .55s ease}
   @keyframes obFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   .ob-replay{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;padding:14px 22px;background:#eef6e1;border-top:1px solid #d6e3bf}
@@ -697,6 +704,7 @@
   <p>Wenn die Demos überzeugt haben, ist der Recorder in unter einer Minute einsatzbereit — direkt aus dem Chrome Web Store, ohne Installationspaket und ohne IT-Ticket. So einfach geht's: <b>1.</b> oben rechts auf das <b>Erweiterungen-Symbol</b> klicken · <b>2.</b> „pulseXP Recorder" hinzufügen · <b>3.</b> fertig — Icon, Overlay und Recorder erscheinen automatisch, und Sie nehmen Ihren ersten SAP-Prozess sofort auf.</p>
 </div>
 
+<div class="b2-wrap">
 <div class="browser" id="browser2">
   <!-- Overlay (erscheint nach Install) -->
   <x-pw-overlay id="pwOverlay2" hidden>
@@ -753,27 +761,6 @@
     </div>
   </div>
 
-  <!-- Recorder-Panel (erscheint nach Install, im Rahmen angedockt) -->
-  <div class="recorder" id="recorder2" hidden>
-    <div class="r-titlebar"><span class="t-ico"></span><span class="t-name">Recorder</span>
-      <span class="t-btns"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="1"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
-    </div>
-    <div class="r-debug"><span>&bdquo;Recorder&ldquo; started debugging this browser</span><span class="cancel">Cancel</span><span class="x">✕</span></div>
-    <div class="r-header">
-      <div class="r-header-top"><span class="r-logo">pulse<sup>XP</sup></span><span class="r-logo-b">Recorder</span>
-        <span class="r-account">Demo User <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></span></div>
-      <div class="r-tabs"><span class="r-tab active">Record</span><span class="r-tab">Upload</span><span class="r-tab">Tests</span></div>
-    </div>
-    <div class="r-body"><div class="r-card">
-      <div class="r-card-head"><h4>Record Process</h4><button class="rec-toggle"><span class="dot"></span>Record</button></div>
-      <div class="r-desc">Record, assert and validate your process here. Every process needs at least one URL navigation.</div>
-      <div class="r-steps-label"><span>Steps</span></div>
-      <div class="r-steps"><div class="r-empty">No steps recorded yet. Start recording to see your process steps here!</div></div>
-      <div class="r-footer"><span class="r-reload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Reload: On</span>
-        <span class="r-fbtns"><button class="r-fbtn undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</button><button class="r-fbtn redo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>Redo</button><button class="r-fbtn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>Delete</button></span></div>
-    </div></div>
-  </div>
-
   <!-- Chrome Web Store (Install-Flow für Browser 2) -->
   <div id="webstore2" class="webstore" hidden>
     <div class="ws-back" id="ws2-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>Zurück zu SAP</div>
@@ -812,6 +799,28 @@
     <button id="ob-replay-btn"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>Ja, nochmal ansehen</button>
   </div>
 </div>
+
+  <!-- Recorder-Panel (erscheint nach Install — rechts NEBEN dem Browser) -->
+  <div class="recorder" id="recorder2" hidden>
+    <div class="r-titlebar"><span class="t-ico"></span><span class="t-name">Recorder</span>
+      <span class="t-btns"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="14" height="14" rx="1"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+    </div>
+    <div class="r-debug"><span>&bdquo;Recorder&ldquo; started debugging this browser</span><span class="cancel">Cancel</span><span class="x">✕</span></div>
+    <div class="r-header">
+      <div class="r-header-top"><span class="r-logo">pulse<sup>XP</sup></span><span class="r-logo-b">Recorder</span>
+        <span class="r-account">Demo User <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m6 9 6 6 6-6"/></svg></span></div>
+      <div class="r-tabs"><span class="r-tab active">Record</span><span class="r-tab">Upload</span><span class="r-tab">Tests</span></div>
+    </div>
+    <div class="r-body"><div class="r-card">
+      <div class="r-card-head"><h4>Record Process</h4><button class="rec-toggle"><span class="dot"></span>Record</button></div>
+      <div class="r-desc">Record, assert and validate your process here. Every process needs at least one URL navigation.</div>
+      <div class="r-steps-label"><span>Steps</span></div>
+      <div class="r-steps"><div class="r-empty">No steps recorded yet. Start recording to see your process steps here!</div></div>
+      <div class="r-footer"><span class="r-reload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Reload: On</span>
+        <span class="r-fbtns"><button class="r-fbtn undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>Undo</button><button class="r-fbtn redo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg>Redo</button><button class="r-fbtn del"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>Delete</button></span></div>
+    </div></div>
+  </div>
+</div><!-- /b2-wrap -->
 
 <!-- fake cursor + pulse for replay -->
 <svg id="cursor" viewBox="0 0 24 24"><path fill="#1A2332" stroke="#fff" stroke-width="1.5" d="M5.5 3.2 19 11.6l-6.2 1.2-2.7 5.8z"/></svg>
@@ -1548,7 +1557,7 @@
 })();
 </script>
 <script>
-/* Zweiter Browser: Onboarding — clean → Install → Erscheinen (Icon-Puls/Overlay/Recorder) → nochmal-Loop */
+/* Zweiter Browser: Onboarding — vollautomatisch (bewegter Cursor); manueller Klick nur aufs blau blinkende Puzzle-Icon; danach läuft alles allein; Loop */
 (function(){
   var b2=document.getElementById('browser2'); if(!b2) return;
   var ws2=document.getElementById('webstore2'), extMgr2=document.getElementById('extMgr2');
@@ -1556,17 +1565,18 @@
   var pin2=document.getElementById('pin2'), ov2=document.getElementById('pwOverlay2'), rec2=document.getElementById('recorder2');
   var inp=document.getElementById('ws2-input'), hero=document.getElementById('ws2-hero'), results=document.getElementById('ws2-results');
   var cur=document.getElementById('ws2-cursor'), add=document.getElementById('ws2-add');
-  var dlg=document.getElementById('ws2-dialog'), inst=document.getElementById('ws2-installed');
+  var dlg=document.getElementById('ws2-dialog'), inst=document.getElementById('ws2-installed'), confirmBtn=document.getElementById('ws2-confirm');
   var obReplay=document.getElementById('ob-replay');
-  var prevUrl='', busy=false;
+  var SAPURL='https://s4hana.acme.corp/ui#PurchaseOrder-manage';
+  var busy=false;
   function sp(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
   function moveCur(el){ var wr=ws2.getBoundingClientRect(), r=el.getBoundingClientRect(); cur.style.opacity='1'; cur.style.left=(r.left-wr.left+Math.min(r.width*0.4,140))+'px'; cur.style.top=(r.top-wr.top+r.height/2)+'px'; }
-  function cleanState(){ pin2.hidden=true; ov2.hidden=true; rec2.hidden=true; obReplay.hidden=true; pin2.classList.remove('justadded','ob-reveal'); ov2.classList.remove('ob-reveal'); rec2.classList.remove('ob-reveal'); obReplay.classList.remove('ob-reveal'); }
-  function closeStore(){ ws2.hidden=true; fiori2.hidden=false; cur.style.opacity='0'; if(burl2) burl2.textContent=prevUrl; }
-  async function openStore(){
+  function tap(){ cur.classList.remove('tap'); void cur.offsetWidth; cur.classList.add('tap'); }
+  function hideExtras(){ pin2.hidden=true; ov2.hidden=true; rec2.hidden=true; obReplay.hidden=true; pin2.classList.remove('justadded','ob-reveal'); ov2.classList.remove('ob-reveal'); rec2.classList.remove('ob-reveal'); obReplay.classList.remove('ob-reveal'); }
+  function toClean(){ ws2.hidden=true; fiori2.hidden=false; cur.style.opacity='0'; if(burl2) burl2.textContent=SAPURL; hideExtras(); extMgr2.classList.add('blink-focus'); busy=false; }
+  async function run(){
     if(busy) return; busy=true;
-    cleanState();
-    prevUrl = burl2 ? burl2.textContent : '';
+    extMgr2.classList.remove('blink-focus'); hideExtras();
     fiori2.hidden=true; ws2.hidden=false;
     hero.hidden=false; results.hidden=true; dlg.hidden=true; inst.hidden=true;
     inp.value=''; add.textContent='In Chrome hinzufügen'; add.disabled=false; add.classList.remove('added');
@@ -1576,24 +1586,25 @@
     for(var i=1;i<=text.length;i++){ inp.value=text.slice(0,i); await sp(55+Math.random()*75); }
     await sp(550); hero.hidden=true; results.hidden=false;
     if(burl2) burl2.textContent='https://chromewebstore.google.com/search/pulseXP%20Recorder';
-    await sp(600); moveCur(add);
-    busy=false;
-  }
-  async function install(){
+    /* Auto: „In Chrome hinzufügen" */
+    await sp(700); moveCur(add); await sp(800); tap(); await sp(260);
+    dlg.hidden=false;
+    /* Auto: „Erweiterung hinzufügen" */
+    await sp(950); moveCur(confirmBtn); await sp(800); tap(); await sp(260);
     dlg.hidden=true; add.textContent='Wird geprüft …'; add.disabled=true;
     await sp(1300); add.textContent='✓ Zu Chrome hinzugefügt'; add.classList.add('added'); inst.hidden=false;
-    await sp(1900); closeStore();
+    await sp(1900); ws2.hidden=true; fiori2.hidden=false; cur.style.opacity='0'; if(burl2) burl2.textContent=SAPURL;
+    /* Erscheinen: Icon-Puls → Overlay → Recorder → Prompt */
     pin2.hidden=false; pin2.classList.add('ob-reveal','justadded'); await sp(1000);
     ov2.hidden=false; ov2.classList.add('ob-reveal'); await sp(750);
     rec2.hidden=false; rec2.classList.add('ob-reveal'); await sp(650);
     obReplay.hidden=false; obReplay.classList.add('ob-reveal');
+    busy=false;
   }
-  extMgr2.addEventListener('click', function(){ openStore(); });
-  document.getElementById('ws2-back').addEventListener('click', function(){ closeStore(); cleanState(); });
-  add.addEventListener('click', function(){ if(!add.classList.contains('added')) dlg.hidden=false; });
-  document.getElementById('ws2-cancel').addEventListener('click', function(){ dlg.hidden=true; });
-  document.getElementById('ws2-confirm').addEventListener('click', install);
-  document.getElementById('ob-replay-btn').addEventListener('click', function(){ cleanState(); openStore(); });
+  extMgr2.addEventListener('click', function(){ run(); });
+  document.getElementById('ws2-back').addEventListener('click', function(){ toClean(); });
+  document.getElementById('ob-replay-btn').addEventListener('click', function(){ toClean(); });
+  toClean(); /* Start: clean-Zustand, Puzzle-Icon blinkt blau */
 })();
 </script>
 </body>
