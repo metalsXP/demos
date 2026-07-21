@@ -283,10 +283,10 @@
   .bext-pin.justadded{animation:pinPulse 1s ease 2}
   @keyframes pinPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 3px rgba(26,115,232,.5)}}
   /* ══════════ Zweiter Browser: Overlay2 · Recorder2 · WebStore2 · Reveal ══════════ */
-  .b2-wrap{position:relative;max-width:1180px;margin:10px auto 120px}
-  #browser2{margin:0 auto}
+  .b2-wrap{display:flex;gap:16px;align-items:flex-start;max-width:1180px;margin:10px auto 120px;padding:0 12px}
+  #browser2{flex:0 1 800px;min-width:0;max-width:800px;margin:0}
   .bext-pin[hidden]{display:none !important}
-  @media(max-width:900px){#recorder2{position:static;width:auto;margin:12px 0 0}}
+  @media(max-width:900px){.b2-wrap{flex-direction:column}#recorder2{flex:none!important;width:auto!important}}
   #pwOverlay2{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:22;background:transparent;pointer-events:auto;font-family:system-ui,"Ubuntu","Droid Sans",sans-serif;color:#333}
   #pwOverlay2 x-pw-tools-list{display:flex;background-color:#ffffffdd;box-shadow:rgba(0,0,0,.1) 0 5px 5px;border-radius:3px}
   #pwOverlay2 x-pw-tool-gripper{height:28px;width:24px;margin:2px 0;display:block}
@@ -302,7 +302,7 @@
   #pwOverlay2 x-pw-tool-item.value>x-div{clip-path:url(#icon-symbol-constant)}
   #pwOverlay2 x-pw-tool-item.capture>x-div{clip-path:url(#icon-capture)}
   #pwOverlay2 x-pw-tool-item.attach-tab>x-div{clip-path:url(#icon-attach-tab)}
-  #recorder2{position:absolute;top:12px;right:14px;width:340px;z-index:20}
+  #recorder2{position:static;flex:0 0 340px;width:340px;align-self:flex-start;z-index:1}
   #recorder2 .r-steps{min-height:80px}
   #webstore2{position:relative;background:#fff;min-height:560px;font-family:'Roboto',Arial,sans-serif;color:#202124}
   #webstore2[hidden]{display:none}
@@ -781,7 +781,6 @@
         </div>
       </div>
     </div>
-    <svg id="ws2-cursor" class="ws-cursor2" viewBox="0 0 24 24"><path fill="#1A2332" stroke="#fff" stroke-width="1.5" d="M5.5 3.2 19 11.6l-6.2 1.2-2.7 5.8z"/></svg>
     <div class="ws-dialog-back" id="ws2-dialog" hidden>
       <div class="ws-dialog">
         <div class="ws-dialog-head"><span class="mxp-sm">m<sup>XP</sup></span>„pulseXP Recorder" hinzufügen?</div>
@@ -791,6 +790,8 @@
     </div>
     <div class="ws-installed" id="ws2-installed" hidden><span class="mxp-sm">m<sup>XP</sup></span><div><b>pulseXP Recorder</b> wurde zu Chrome hinzugefügt</div></div>
   </div>
+
+  <svg id="ws2-cursor" class="ws-cursor2" viewBox="0 0 24 24"><path fill="#1A2332" stroke="#fff" stroke-width="1.5" d="M5.5 3.2 19 11.6l-6.2 1.2-2.7 5.8z"/></svg>
 
   <!-- Abschluss-Prompt: nochmal ansehen -->
   <div class="ob-replay" id="ob-replay" hidden>
@@ -1564,7 +1565,7 @@
   var SAPURL='https://s4hana.acme.corp/ui#PurchaseOrder-manage';
   var busy=false;
   function sp(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
-  function moveCur(el){ var wr=ws2.getBoundingClientRect(), r=el.getBoundingClientRect(); cur.style.opacity='1'; cur.style.left=(r.left-wr.left+Math.min(r.width*0.4,140))+'px'; cur.style.top=(r.top-wr.top+r.height/2)+'px'; }
+  function moveCur(el){ var wr=b2.getBoundingClientRect(), r=el.getBoundingClientRect(); cur.style.opacity='1'; cur.style.left=(r.left-wr.left+Math.min(r.width*0.4,140))+'px'; cur.style.top=(r.top-wr.top+r.height/2)+'px'; }
   function tap(){ cur.classList.remove('tap'); void cur.offsetWidth; cur.classList.add('tap'); }
   function hideExtras(){ pin2.hidden=true; ov2.hidden=true; rec2.hidden=true; obReplay.hidden=true; pin2.classList.remove('justadded','ob-reveal'); ov2.classList.remove('ob-reveal'); rec2.classList.remove('ob-reveal'); obReplay.classList.remove('ob-reveal'); }
   function toClean(){ ws2.hidden=true; fiori2.hidden=false; cur.style.opacity='0'; if(burl2) burl2.textContent=SAPURL; hideExtras(); extMgr2.classList.add('blink-focus'); busy=false; }
@@ -1583,8 +1584,8 @@
     /* Auto: „In Chrome hinzufügen" */
     await sp(700); moveCur(add); await sp(800); tap(); await sp(260);
     dlg.hidden=false;
-    /* Auto: „Erweiterung hinzufügen" */
-    await sp(950); moveCur(confirmBtn); await sp(800); tap(); await sp(260);
+    /* Auto: „Erweiterung hinzufügen" — 1 Sek. mehr Pause auf der Bestätigungs-Abfrage */
+    await sp(1950); moveCur(confirmBtn); await sp(800); tap(); await sp(260);
     dlg.hidden=true; add.textContent='Wird geprüft …'; add.disabled=true;
     await sp(1300); add.textContent='✓ Zu Chrome hinzugefügt'; add.classList.add('added'); inst.hidden=false;
     await sp(1900); ws2.hidden=true; fiori2.hidden=false; cur.style.opacity='0'; if(burl2) burl2.textContent=SAPURL;
@@ -1595,9 +1596,11 @@
     obReplay.hidden=false; obReplay.classList.add('ob-reveal');
     busy=false;
   }
+  /* Loop-Neustart: Cursor fährt automatisch aufs blinkende Erweiterungs-Icon und klickt es */
+  async function loopStart(){ if(busy) return; toClean(); await sp(850); moveCur(extMgr2); await sp(900); tap(); await sp(340); run(); }
   extMgr2.addEventListener('click', function(){ run(); });
   document.getElementById('ws2-back').addEventListener('click', function(){ toClean(); });
-  document.getElementById('ob-replay-btn').addEventListener('click', function(){ toClean(); });
+  document.getElementById('ob-replay-btn').addEventListener('click', function(){ loopStart(); });
   toClean(); /* Start: clean-Zustand, Puzzle-Icon blinkt blau */
 })();
 </script>
