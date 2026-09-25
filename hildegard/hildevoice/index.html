@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>pulseXP — HildeVoice</title>
+<link rel="icon" href="hilde.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* pulseXP design system */
+    --ds-primary:#3B5E78; --ds-secondary:#A5679C; --ds-alert:#E96070;
+    --color-secondary-dark:#BDCE33; --color-accent-mid:#CDDE66; --ds-success-title:#A1B977;
+    --color-secondary-light:#D0C6DB; --ds-text-secondary:#7E777C;
+    --navy-deep:#152331; --navy-hero:#0F1B26; --ds-info-bg:#CEDBE3;
+    /* recorder chrome */
+    --rec-header:#4E5E6E; --rec-header2:#41505F; --rec-titlebar:#F1F3F4;
+    --rec-steps-bg:#F4F5F6; --rec-chrome-blue:#1A73E8;
+    /* SAP Fiori Horizon (approx.) */
+    --fi-brand:#0070f2; --fi-brand-active:#0064d9;
+    --fi-bg:#f5f6f7; --fi-text:#1d2d3e; --fi-text-2:#556b82; --fi-line:#e5e5e5;
+    --fi-good:#256f3a; --fi-good-bg:#ebf5eb; --fi-warn:#e76500; --fi-err:#aa0808; --fi-err-bg:#ffeaf0;
+    /* real highlight colour from recorder source (highlight.ts) */
+    --pw-highlight:#6fa8dc7f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{overflow-anchor:none;font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#1d2d3e;background:#e9edf1;line-height:1.55;-webkit-font-smoothing:antialiased}
+  button,input,textarea,select{font-family:inherit}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+
+  /* ── auth gate (same as main mockup) ── */
+  #authGate{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:radial-gradient(60% 90% at 85% 0%,rgba(165,103,156,.35) 0%,rgba(165,103,156,0) 60%),linear-gradient(160deg,var(--navy-hero) 0%,var(--navy-deep) 55%,var(--ds-primary) 100%)}
+  .auth-card{width:100%;max-width:380px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:38px 34px;backdrop-filter:blur(10px);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.35rem;color:#fff;letter-spacing:-.02em}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--color-secondary-dark);box-shadow:0 0 0 4px rgba(189,206,51,.25)}
+  .auth-card .brand{margin-bottom:6px}
+  .auth-card p.sub{color:#A9B9C4;font-size:.9rem;margin-bottom:26px}
+  .auth-field{margin-bottom:16px}
+  .auth-field label{display:block;font-size:.8rem;color:#C7D3DC;margin-bottom:6px;font-weight:600}
+  .auth-field input{width:100%;padding:11px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-size:.95rem}
+  .auth-field input:focus{outline:none;border-color:var(--color-secondary-dark)}
+  .auth-submit{width:100%;margin-top:6px;padding:13px 28px;border-radius:999px;font-weight:700;font-size:.98rem;border:none;cursor:pointer;background:var(--color-secondary-dark);color:#152331}
+  .auth-error{display:none;margin-top:14px;padding:10px 12px;border-radius:10px;font-size:.84rem;background:rgba(233,96,112,.18);color:#FBC7CD}
+  .auth-error.visible{display:block}
+  .auth-note{margin-top:22px;font-size:.76rem;color:#7C8E9B;text-align:center}
+  #siteContent[hidden]{display:none}
+
+  /* ── top ── */
+  .mockbar{background:var(--ds-info-bg);color:var(--navy-deep);text-align:center;font-size:.8rem;font-weight:600;padding:8px 16px}
+  .topnav{background:var(--navy-hero);color:#fff}
+  .topnav .wrap{display:flex;align-items:center;gap:18px;height:56px}
+  .topnav .brand{font-size:1.15rem}
+  .topnav .brand small{font-weight:600;color:#9fb1c0;font-size:.8rem;margin-left:4px}
+  .topnav a{color:#c4d0da;text-decoration:none;font-size:.86rem;font-weight:600;margin-left:auto}
+  .topnav a:hover{color:#fff}
+
+  .intro{padding:26px 0 8px;display:flex;gap:22px;align-items:center}
+  .intro img{width:74px;height:74px;border-radius:50%;background:#fff;box-shadow:0 6px 18px rgba(21,35,49,.15);flex-shrink:0}
+  .eyebrow{font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ds-secondary)}
+  .intro h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;color:var(--navy-hero);line-height:1.2}
+  .intro h1 em{font-style:normal;color:var(--ds-secondary)}
+  .intro p{color:#4a5b6b;font-size:.95rem;margin-top:4px;max-width:820px}
+  .hintbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
+  .hint{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;font-weight:600;background:#fff;border:1px solid #d7dee5;color:#3b4b5b;padding:6px 12px;border-radius:999px}
+  .hint b{color:var(--ds-secondary)}
+  .hint .n{width:18px;height:18px;border-radius:50%;background:var(--ds-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+
+  .stage{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:22px;align-items:start;margin-bottom:60px}
+  @media (max-width:1100px){.stage{grid-template-columns:1fr}}
+
+  /* ── browser frame ── */
+  .browser{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 24px 60px rgba(21,35,49,.20),0 2px 8px rgba(21,35,49,.10);border:1px solid #dfe4e9;position:relative}
+  .bchrome{background:#e9ecef;display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #dce0e4}
+  .bdots{display:flex;gap:7px}.bdots i{width:11px;height:11px;border-radius:50%}
+  .bdots i:nth-child(1){background:#ff5f57}.bdots i:nth-child(2){background:#febc2e}.bdots i:nth-child(3){background:#28c840}
+  .burl{flex:1;min-width:0;background:#fff;border:1px solid #d5dade;border-radius:7px;font-size:.76rem;color:#5b6b7a;padding:6px 12px;display:flex;align-items:center;gap:8px;white-space:nowrap;overflow:hidden}
+  .burl svg{width:12px;height:12px;color:#8a97a3;flex-shrink:0}
+  .burl span{overflow:hidden;text-overflow:ellipsis}
+
+  /* Fiori object page */
+  .fiori{font-family:"72","72full","Inter",Arial,Helvetica,sans-serif;background:var(--fi-bg);color:var(--fi-text);min-height:560px;position:relative}
+  .fshell{background:#fff;border-bottom:1px solid #e5e5e5;display:flex;align-items:center;gap:14px;padding:0 14px;height:44px}
+  .fshell .flogo b{background:#0a6ed1;color:#fff;border-radius:3px;padding:1px 6px;font-weight:800;font-size:.8rem;letter-spacing:.06em}
+  .fshell .ftitle{font-size:.9rem;font-weight:700}
+  .fshell .favatar{margin-left:auto;width:30px;height:30px;border-radius:50%;background:#5d7893;color:#fff;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .fhead{background:#fff;padding:16px 22px 12px;border-bottom:1px solid var(--fi-line)}
+  .fhead h2{font-size:1.2rem;font-weight:800;letter-spacing:-.01em}
+  .fhead .sub{font-size:.8rem;color:var(--fi-text-2);margin-top:2px}
+  .fhead .kpis{display:flex;gap:28px;margin-top:10px;flex-wrap:wrap}
+  .fhead .kpi label{display:block;font-size:.7rem;color:var(--fi-text-2);font-weight:600}
+  .fhead .kpi span{font-size:.86rem;font-weight:700}
+  .ostat{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700}
+  .ostat .d{width:9px;height:9px;border-radius:50%;background:currentColor}
+  .ostat.good{color:var(--fi-good)} .ostat.warn{color:var(--fi-warn)} .ostat.neutral{color:var(--fi-text-2)} .ostat.err{color:var(--fi-err)}
+
+  .fbody{padding:14px 18px 18px;display:grid;gap:14px}
+  .fsec{background:#fff;border:1px solid var(--fi-line);border-radius:10px;padding:14px 16px}
+  .fsec h3{font-size:.9rem;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .fsec h3 .tag{font-size:.66rem;font-weight:700;color:var(--fi-text-2);background:#eef1f4;border-radius:4px;padding:2px 6px}
+  .fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px}
+  @media (max-width:760px){.fgrid{grid-template-columns:1fr}}
+  .ffield{display:flex;flex-direction:column;gap:4px;position:relative}
+  .ffield label{font-size:.72rem;color:var(--fi-text-2);font-weight:600}
+  .ffield .inp{font-size:.84rem;background:#fff;border:1px solid #a9b4be;border-radius:6px;padding:7px 11px;min-height:34px;display:flex;align-items:center;gap:6px;transition:border-color .15s,box-shadow .15s}
+  .ffield .inp.ro{background:#f7f8f9;border-color:#d5dbe1;color:var(--fi-text-2)}
+  .ffield .inp.focus{border-color:var(--fi-brand);box-shadow:0 0 0 2px rgba(0,112,242,.18)}
+  .ffield .caret{display:inline-block;width:1px;height:15px;background:var(--fi-text);animation:blink 1s steps(1) infinite;visibility:hidden}
+  .ffield .inp.focus .caret{visibility:visible}
+  @keyframes blink{50%{opacity:0}}
+  .ffield .hint2{font-size:.7rem;font-weight:600;min-height:16px}
+  .ffield .hint2.good{color:var(--fi-good)}
+  .fbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .fbtn{font-size:.8rem;font-weight:700;border-radius:8px;border:1px solid #a9b4be;padding:7px 14px;background:#fff;color:var(--fi-brand);cursor:default;transition:background .15s,transform .1s}
+  .fbtn.primary{background:var(--fi-brand);color:#fff;border-color:var(--fi-brand)}
+  .fbtn.pressed{transform:scale(.96);filter:brightness(.92)}
+  .fbtn:disabled{opacity:.45}
+
+  .feas-empty{font-size:.8rem;color:#9aa4ad;padding:10px 2px}
+  .feas-table{display:none;border:1px solid var(--fi-line);border-radius:8px;overflow:hidden}
+  .feas-table.show{display:block}
+  .feas-row{display:grid;grid-template-columns:1.3fr 1fr 1fr .8fr;gap:10px;padding:8px 12px;font-size:.8rem;border-bottom:1px solid #eef1f4;align-items:center}
+  .feas-row:last-child{border-bottom:none}
+  .feas-row.head{background:#f4f6f8;font-size:.7rem;font-weight:700;color:var(--fi-text-2)}
+  .feas-row .num{font-variant-numeric:tabular-nums}
+  .feas-row.pending{opacity:.35}
+  .feas-legend{font-size:.72rem;color:var(--fi-text-2);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
+  .feas-legend .ostat{font-size:.72rem}
+  .ppath{display:none;margin-top:10px;font-size:.82rem;background:var(--fi-good-bg);border:1px solid #cfe5d2;border-radius:8px;padding:9px 12px;color:var(--fi-good);font-weight:600}
+  .ppath.show{display:block}
+  .toast{position:absolute;right:16px;top:56px;transform:translate(0,-10px);background:#1d2d3e;color:#fff;font-size:.82rem;font-weight:600;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:5}
+  .toast.show{opacity:1;transform:translate(0,0)}
+
+  /* replay visuals: real recorder highlight (blue) + action point (red) */
+  .pw-hl{position:absolute;background:var(--pw-highlight);border-radius:2px;pointer-events:none;z-index:6;opacity:0;transition:opacity .2s,left .5s,top .5s,width .5s,height .5s}
+  .pw-hl.show{opacity:1}
+  .pw-tip{position:absolute;background:rgba(255,255,255,.92);backdrop-filter:blur(5px);color:#333;font-size:12.8px;line-height:1.5;padding:4px 9px;border-radius:6px;box-shadow:0 .5rem 1.2rem rgba(0,0,0,.3);font-family:ui-monospace,Menlo,Consolas,monospace;pointer-events:none;z-index:7;opacity:0;white-space:nowrap;transition:opacity .2s}
+  .pw-tip.show{opacity:1}
+  .pw-point{position:absolute;width:20px;height:20px;border-radius:10px;background:red;margin:-10px 0 0 -10px;pointer-events:none;z-index:8;opacity:0}
+  .pw-point.go{animation:pt .6s ease-out}
+  @keyframes pt{0%{opacity:.9;transform:scale(.5)}100%{opacity:0;transform:scale(1.8)}}
+
+  /* ── Hilde speaking overlay inside the browser ── */
+  .hilde-say{position:fixed;left:16px;bottom:18px;width:min(760px,calc(100vw - 32px));display:flex;gap:12px;align-items:flex-end;z-index:9500;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s}
+  .hilde-say.show{opacity:1;transform:none}
+  .hilde-say.show{pointer-events:auto;cursor:grab}
+  .hilde-say.dragging{cursor:grabbing;transition:opacity .3s}
+  .hilde-say.dragging .bubble{box-shadow:0 18px 44px rgba(21,35,49,.38)}
+  .hilde-say .grip{margin-left:auto;font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:none;color:#b3a3b1}
+  #sayText{position:relative;padding-top:6px;user-select:none}
+  .kw{transition:color .15s}
+  .kw.past{color:#1d2d3e}
+  .kw.cur{color:var(--ds-secondary);font-weight:700}
+  .hilde-say.talking .kw:not(.past):not(.cur){color:#8a97a3}
+  .kdot{position:absolute;left:0;top:0;width:8px;height:8px;border-radius:50%;background:var(--ds-secondary);box-shadow:0 2px 4px rgba(165,103,156,.45);opacity:0;pointer-events:none}
+  .kdot.on{opacity:1}
+  .hilde-say:not(.talking) .kdot{opacity:0;transition:opacity .3s}
+  .hilde-say .av{width:62px;height:62px;border-radius:50%;background:#fff;box-shadow:0 6px 18px rgba(21,35,49,.3);flex-shrink:0;position:relative}
+  .hilde-say .av img{width:100%;height:100%;border-radius:50%}
+  .hilde-say .av::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:3px solid var(--ds-secondary);opacity:0}
+  .hilde-say.talking .av::after{animation:ring 1.4s ease-out infinite}
+  @keyframes ring{0%{opacity:.8;transform:scale(.92)}100%{opacity:0;transform:scale(1.25)}}
+  .hilde-say .bubble{background:#fff;border-radius:14px 14px 14px 4px;border:1.5px solid var(--color-secondary-light);padding:11px 15px;box-shadow:0 10px 30px rgba(21,35,49,.28);max-width:640px;font-size:.88rem;color:#1d2d3e;line-height:1.45}
+  .hilde-say .who{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ds-secondary);margin-bottom:3px}
+  .bars{display:inline-flex;gap:2px;align-items:flex-end;height:11px}
+  .bars i{width:3px;background:var(--ds-secondary);border-radius:2px;height:3px}
+  .hilde-say.talking .bars i{animation:bar .9s ease-in-out infinite}
+  .bars i:nth-child(2){animation-delay:.15s!important}.bars i:nth-child(3){animation-delay:.3s!important}.bars i:nth-child(4){animation-delay:.45s!important}
+  @keyframes bar{0%,100%{height:3px}50%{height:11px}}
+  .hilde-say .src{font-size:.66rem;color:#8a97a3;margin-top:4px}
+
+  /* ══════════ RECORDER PANEL (mirrors the current pulseXP Recorder UI) ══════════ */
+  .recorder{background:#fff;border-radius:12px;overflow:hidden;font-size:14px;box-shadow:0 26px 60px rgba(21,35,49,.30),0 3px 10px rgba(21,35,49,.16);position:sticky;top:14px}
+  .r-win{background:#323336;display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #1f2022}
+  .r-win i{width:12px;height:12px;border-radius:50%;display:block}
+  .r-win i:nth-child(1){background:#ff5f57}.r-win i:nth-child(2){background:#febc2e}.r-win i:nth-child(3){background:#28c840}
+  .r-win span{margin-left:10px;font-size:.8rem;font-weight:700;color:#b9bcc1}
+  .r-debug{background:#2a2b2e;display:flex;align-items:center;justify-content:center;gap:14px;padding:9px 12px;color:#e8eaed}
+  .r-debug span{font-size:.76rem}
+  .r-debug .cancel{background:#a8c7fa;color:#062e6f;font-size:.74rem;font-weight:700;padding:5px 14px;border-radius:999px}
+  .r-debug .x{color:#c4c7c5;font-size:.9rem;margin-left:auto}
+  .r-header{position:relative;color:#fff;padding:14px 16px 0;
+    background:
+      radial-gradient(120% 70% at 20% 0%,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 60%),
+      radial-gradient(60% 40% at 85% 30%,rgba(255,255,255,.12) 0%,rgba(255,255,255,0) 70%),
+      linear-gradient(180deg,#46678a 0%,#5d7fa3 55%,#6f8fb0 100%)}
+  .r-header-top{display:flex;align-items:center;gap:10px;padding-bottom:12px}
+  .r-logo{font-weight:300;font-size:1.25rem;color:#eef3f8;letter-spacing:.01em}.r-logo sup{font-size:.55em;font-weight:500}
+  .r-logo-b{font-weight:700;font-size:1.15rem;color:#fff}
+  .r-gear{margin-left:auto;width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.10);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .r-gear:hover{background:rgba(255,255,255,.2)}
+  .r-gear svg{width:15px;height:15px}
+  .r-account{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);padding:6px 12px;border-radius:8px;font-size:.8rem;font-weight:500}
+  .r-tabs{display:flex;gap:4px;border-top:1px solid rgba(255,255,255,.15);margin:0 -16px;padding:0 16px}
+  .r-tab{padding:10px 14px 11px;font-size:.86rem;font-weight:500;color:rgba(255,255,255,.72);border-bottom:2.5px solid transparent}
+  .r-tab.active{color:#fff;border-bottom-color:#fff}
+  .r-body{background:linear-gradient(180deg,#6f8fb0 0%,#8aa6c1 100%);padding:14px 12px 12px}
+  .r-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(21,35,49,.16)}
+  .r-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;background:#f7f8fa;border-bottom:1px solid #eceef1}
+  .r-card-head h4{font-size:1rem;font-weight:700;color:#111}
+  .r-stopbtn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3d5f7c,#5b7d99);color:#fff;font-size:.82rem;font-weight:700;padding:7px 14px;border-radius:8px}
+  .r-stopbtn i{width:13px;height:13px;border:1.8px solid #fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+  .r-stopbtn i::after{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
+  .r-desc{padding:10px 16px 2px;font-size:.78rem;color:#6b6f75;line-height:1.45}
+  .r-sub{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 16px 8px}
+  .r-sub b{font-size:.86rem;color:#111}
+  .mode{display:inline-flex;background:#eef1f4;border-radius:999px;padding:3px;gap:2px}
+  .mode button{border:none;background:none;font-size:.7rem;font-weight:800;color:#5B6B7A;padding:5px 10px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+  .mode button.on{background:#fff;color:var(--ds-secondary);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .mode img{width:14px;height:14px;border-radius:50%}
+
+  .r-steps{margin:0 12px 12px;background:#f0f1f3;border-radius:12px;padding:10px;max-height:640px;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+  .r-step{background:#fff;border-radius:9px;border-left:4px solid #34475a;box-shadow:0 1px 3px rgba(21,35,49,.08);font-size:.84rem;color:#1f2328;transition:border-color .2s,background .2s}
+  .r-step.active{border-left-color:var(--ds-secondary);background:#fbf6fa}
+  .r-step.done{border-left-color:var(--ds-success-title)}
+  .st-row{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;min-height:46px}
+  .st-row svg.st-ico{width:16px;height:16px;color:#3c4653;flex-shrink:0}
+  .st-grip{display:none;color:#6b7280;flex-shrink:0}
+  .st-grip svg{width:15px;height:15px;display:block}
+  .st-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .st-hilde{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:none;box-shadow:0 0 0 2px #fff,0 0 0 3.5px var(--ds-secondary)}
+  .st-hilde.on{display:block}
+  .st-acts{display:none;align-items:center;gap:6px;flex-shrink:0}
+  .st-acts span{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .st-acts .up{background:#3c4653;color:#fff}
+  .st-acts .del{background:#3c4653;color:#fff}
+  .st-acts svg{width:12px;height:12px}
+  .st-open{width:26px;height:26px;border-radius:50%;background:#eef1f4;color:#3c4653;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .2s}
+  .st-open svg{width:13px;height:13px}
+  .r-step:hover .st-acts{display:flex}
+  .r-step:hover .st-row>svg.st-ico{display:none}
+  .r-step:hover .st-grip{display:block}
+  .r-step.open .st-open{transform:rotate(-90deg);background:none}
+  .st-more{display:none;border-top:1px solid #eef0f2;padding:12px 16px 14px;flex-direction:column;gap:14px}
+  .r-step.open .st-more{display:flex}
+  .set-l{font-size:.86rem;font-weight:700;color:#1f2328;margin-bottom:6px}
+  .dur{display:flex;align-items:center;gap:14px}
+  .dur input{flex:1;accent-color:#34475a}
+  .dur b{font-size:.84rem;min-width:30px;text-align:right}
+  .desc-in{width:100%;border:1px solid #d7dbe0;border-radius:9px;padding:9px 12px;font-size:.84rem;color:#1f2328}
+  .desc-in::placeholder{color:#9aa0a6}
+  .tgl{display:flex;gap:12px;align-items:flex-start}
+  .tgl .sw{width:40px;height:22px;border-radius:999px;background:#cfd4da;position:relative;flex-shrink:0;cursor:pointer;transition:background .2s;margin-top:1px}
+  .tgl .sw::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:left .2s}
+  .tgl .sw.on{background:#34475a}.tgl .sw.on::after{left:21px}
+  .tgl.hilde .sw.on{background:var(--ds-secondary)}
+  .tgl b{display:block;font-size:.86rem;font-weight:600;color:#1f2328}
+  .tgl small{display:block;font-size:.74rem;color:#6b6f75;line-height:1.4}
+  .tgl .new{font-size:.6rem;font-weight:800;letter-spacing:.08em;background:var(--ds-secondary);color:#fff;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:2px}
+  .reset{align-self:flex-end;background:#c4c8cc;color:#fff;font-size:.8rem;font-weight:700;border:none;border-radius:8px;padding:7px 14px;display:inline-flex;align-items:center;gap:6px}
+
+  .hbox{display:none;border:1.5px solid var(--color-secondary-light);background:linear-gradient(180deg,#fbf8fb,#fff);border-radius:10px;padding:10px;margin-top:-4px}
+  .hbox.show{display:block}
+  .hbox-head{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .hbox-head img{width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px var(--ds-secondary)}
+  .hbox-head b{font-size:.82rem;color:var(--ds-secondary);font-weight:800;white-space:nowrap}
+  .hbox-head small{margin-left:auto;font-size:.66rem;color:#9aa4ad;font-weight:600;white-space:nowrap}
+  .hbox textarea{width:100%;min-height:78px;resize:vertical;border:1px solid #d5dbe1;border-radius:8px;padding:8px 10px;font-size:.82rem;line-height:1.45;color:#1A2332;background:#fff}
+  .hbox textarea:focus{outline:none;border-color:var(--ds-secondary);box-shadow:0 0 0 2px rgba(165,103,156,.16)}
+  .hbox-meta{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+  .chip{font-size:.66rem;font-weight:800;border-radius:999px;padding:3px 9px;display:inline-flex;align-items:center;gap:5px}
+  .chip.ready{background:#e6efd9;color:#56702c}
+  .chip.stale{background:#fdf0e3;color:#b35a00}
+  .chip.none{background:#eef1f4;color:#7a8791}
+  .chip.busy{background:#efe6f0;color:var(--ds-secondary)}
+  .chip.err{background:#fde8eb;color:#b3243c}
+  .hbox-meta .est{font-size:.66rem;color:#9aa4ad;font-weight:600;transition:color .2s}
+  .hbox-meta .est b{font-weight:700;color:#6b7580}
+  .hbox-meta .est b.bad{color:#b3243c}
+  .hbox-meta .est.flash b{color:#b3243c}
+  .hbox-btns{margin-left:auto;display:flex;gap:6px}
+  .hbtn{font-size:.72rem;font-weight:800;border:none;border-radius:999px;padding:6px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+  .hbtn svg{width:11px;height:11px}
+  .hbtn.gen{background:var(--ds-secondary);color:#fff}
+  .hbtn.gen:hover{filter:brightness(.93)}
+  .hbtn.prev{background:#eef1f4;color:#3C4653}
+  .hbtn:disabled{opacity:.45;cursor:not-allowed}
+  .hbox-note{font-size:.68rem;color:#8a8f96;margin-top:6px;line-height:1.4}
+
+  .r-bundle{margin:0 12px 10px;font-size:.72rem;color:#5B6B7A;background:#f6f7f8;border-radius:8px;padding:7px 10px;display:flex;gap:8px;align-items:center}
+  .r-bundle svg{width:13px;height:13px;color:var(--ds-primary);flex-shrink:0}
+  .r-play{margin:0 12px 12px;display:flex;gap:8px}
+  .r-play button{flex:1;font-size:.84rem;font-weight:800;border:none;border-radius:999px;padding:9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+  .r-play .replay{background:#34475a;color:#fff}.r-play .replay:hover{background:var(--navy-deep)}
+  .r-play .stop{background:#eef1f4;color:#5B6B7A;flex:0 0 auto;padding:9px 16px}
+  .r-play button:disabled{opacity:.5;cursor:not-allowed}
+  .r-play svg{width:12px;height:12px}
+  .r-status{padding:0 16px 10px;font-size:.74rem;color:#5B6B7A}
+  .r-status b{color:#1A2332}
+  .r-footer{display:flex;align-items:center;padding:12px 16px;border-top:1px solid #eceef1;gap:8px;background:#f7f8fa}
+  .r-reload{display:flex;align-items:center;gap:7px;font-size:.82rem;color:#3C4653;font-weight:600}
+  .r-reload svg{width:15px;height:15px;color:var(--ds-success-title)}
+  .r-fbtns{margin-left:auto;display:flex;gap:7px}
+  .r-fbtn{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:700;color:#fff;padding:7px 12px;border-radius:8px}
+  .r-fbtn.undo,.r-fbtn.redo{background:#c4c8cc}.r-fbtn.del{background:linear-gradient(180deg,#b2426f,#e0869f)}
+  /* ── settings modal ── */
+  .modal{position:fixed;inset:0;background:rgba(15,27,38,.55);display:none;align-items:center;justify-content:center;z-index:9000;padding:20px}
+  .modal.show{display:flex}
+  .mcard{background:#fff;border-radius:14px;max-width:460px;width:100%;box-shadow:0 30px 70px rgba(0,0,0,.35);overflow:hidden}
+  .mhead{display:flex;align-items:center;gap:10px;padding:16px 18px;background:linear-gradient(165deg,var(--rec-header),var(--rec-header2));color:#fff}
+  .mhead img{width:34px;height:34px;border-radius:50%;background:#fff}
+  .mhead h3{font-size:1rem;font-weight:800}
+  .mhead p{font-size:.72rem;color:#c9d4dd}
+  .mbody{padding:16px 18px;display:grid;gap:12px}
+  .mf label{display:block;font-size:.74rem;font-weight:700;color:#3C4653;margin-bottom:4px}
+  .mf input,.mf select{width:100%;border:1px solid #d5dbe1;border-radius:8px;padding:8px 10px;font-size:.84rem}
+  .mf small{display:block;font-size:.7rem;color:#8a97a3;margin-top:4px}
+  .mnote{font-size:.72rem;background:#fdf0e3;color:#8a4a00;border-radius:8px;padding:8px 10px}
+  .mfoot{display:flex;gap:8px;justify-content:flex-end;padding:12px 18px;border-top:1px solid #eef1f4}
+  .mfoot button{font-size:.8rem;font-weight:800;border:none;border-radius:999px;padding:8px 16px;cursor:pointer}
+  .mfoot .ok{background:var(--ds-primary);color:#fff}
+  .mfoot .cx{background:#eef1f4;color:#3C4653}
+  .mtest{font-size:.72rem;font-weight:700;min-height:16px}
+
+  /* how it works */
+  .how{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:-36px 0 60px}
+  @media (max-width:900px){.how{grid-template-columns:1fr 1fr}}
+  .how div{background:#fff;border-radius:12px;padding:14px;border:1px solid #dfe4e9}
+  .how b{display:block;font-size:.84rem;color:var(--navy-hero);margin-bottom:3px}
+  .how p{font-size:.78rem;color:#5b6b7a}
+  .how .k{font-size:.66rem;font-weight:800;letter-spacing:.12em;color:var(--ds-secondary);text-transform:uppercase}
+  footer{background:var(--navy-hero);color:#8a9bab;font-size:.76rem;padding:18px 0;text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ── auth gate (same credentials as the main mockup) ── -->
+<div id="authGate">
+  <div class="auth-card">
+    <div class="brand"><span class="dot"></span>pulseXP</div>
+    <p class="sub">Internal access · authorised testers only</p>
+    <form id="authForm" autocomplete="off">
+      <div class="auth-field"><label for="authUser">Username</label><input id="authUser" type="text" placeholder="Username" autocomplete="username" required></div>
+      <div class="auth-field"><label for="authPass">Password</label><input id="authPass" type="password" placeholder="Password" autocomplete="current-password" required></div>
+      <button type="submit" class="auth-submit">Sign in</button>
+      <div id="authError" class="auth-error">Username or password is incorrect.</div>
+    </form>
+    <p class="auth-note">This preview is not publicly accessible.</p>
+  </div>
+</div>
+
+<div id="siteContent" hidden>
+<div class="mockbar">MOCKUP · HildeVoice concept · Simulated recorder & SAP screen · Voice via HephAIst · metalsXP GmbH</div>
+<div class="topnav"><div class="wrap">
+  <div class="brand"><span class="dot"></span>pulseXP <small>HildeVoice</small></div>
+  <a href="../">← Back to overview</a>
+</div></div>
+
+<div class="wrap">
+  <div class="intro">
+    <img src="hilde.svg" alt="Hildegard">
+    <div>
+      <div class="eyebrow">New · Voice playback per test step</div>
+      <h1>Let <em>Hildegard</em> explain it.</h1>
+      <p>Experts type a short explanation into any test step. HephAIst turns it into a professional English voice clip. On replay, Hildegard speaks at exactly that step — and pulseXP only moves on once the step <b>and</b> the explanation are finished. Your regression test becomes a training course.</p>
+    </div>
+  </div>
+  <div class="hintbar">
+    <span class="hint"><span class="n">1</span>Open a step with <b>›</b> (step settings)</span>
+    <span class="hint"><span class="n">2</span>Switch on <b>“Let Hildegard explain”</b> and type</span>
+    <span class="hint"><span class="n">3</span><b>Generate voice</b> (HephAIst)</span>
+    <span class="hint"><span class="n">4</span>Press <b>Replay</b> in training mode</span>
+  </div>
+
+  <div class="stage">
+    <!-- ══════ BROWSER + SAP ══════ -->
+    <div class="browser" id="browser">
+      <div class="bchrome">
+        <div class="bdots"><i></i><i></i><i></i></div>
+        <div class="burl"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a3.5 3.5 0 0 0-3.5 3.5V6H4a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1h-.5V4.5A3.5 3.5 0 0 0 8 1Zm2 5H6V4.5a2 2 0 1 1 4 0V6Z"/></svg><span id="url">https://s4h.rp.metalsxp.com/ui#Shell-home</span></div>
+      </div>
+      <div class="fiori" id="fiori">
+        <div class="fshell">
+          <span class="flogo"><b>SAP</b></span>
+          <span class="ftitle" id="appTitle">Home</span>
+          <span class="favatar">JL</span>
+        </div>
+        <div class="fhead">
+          <h2 id="soTitle">Create Sales Order</h2>
+          <div class="sub">Order Type: Standard Order (OR) · Sales Org. 1000 · Plant 1200 · FEAS check by pulseXP / HephAIst</div>
+          <div class="kpis">
+            <div class="kpi"><label>Sales Document</label><span id="kDoc">—</span></div>
+            <div class="kpi"><label>Item 10 · FEAS status</label><span id="kFeas" class="ostat neutral"><span class="d"></span>Not checked</span></div>
+            <div class="kpi"><label>Planning</label><span id="kPlan" class="ostat neutral"><span class="d"></span>Open</span></div>
+          </div>
+        </div>
+        <div class="fbody">
+          <div class="fsec">
+            <h3>Header</h3>
+            <div class="fgrid">
+              <div class="ffield"><label>Sold-To Party</label><div class="inp" id="fSold"><span class="v"></span><span class="caret"></span></div><div class="hint2"></div></div>
+              <div class="ffield"><label>Customer Reference (PO)</label><div class="inp" id="fPo"><span class="v"></span><span class="caret"></span></div><div class="hint2"></div></div>
+              <div class="ffield"><label>External Specification</label><div class="inp ro" id="fSpec"><span class="v">—</span></div><div class="hint2"></div></div>
+            </div>
+          </div>
+          <div class="fsec">
+            <h3>Item 10 <span class="tag">Hot Rolled Strip</span></h3>
+            <div class="fgrid">
+              <div class="ffield"><label>Steel Grade</label><div class="inp" id="fGrade"><span class="v"></span><span class="caret"></span></div><div class="hint2" id="hGrade"></div></div>
+              <div class="ffield"><label>Nominal Thickness (mm)</label><div class="inp" id="fThick"><span class="v"></span><span class="caret"></span></div><div class="hint2" id="hThick"></div></div>
+              <div class="ffield"><label>Quantity (t)</label><div class="inp ro"><span class="v">120</span></div><div class="hint2"></div></div>
+            </div>
+            <div class="fbtns">
+              <button class="fbtn primary" id="bFeas" disabled>Run FEAS Check</button>
+              <button class="fbtn" id="bPath" disabled>Assign Production Path</button>
+              <button class="fbtn" id="bRel" disabled>Release for Planning</button>
+            </div>
+          </div>
+          <div class="fsec">
+            <h3>FEAS Check Result <span class="tag">Grade · Spec · Limits</span></h3>
+            <div class="feas-empty" id="feasEmpty">No check has been run for this item yet.</div>
+            <div class="feas-table" id="feasTable">
+              <div class="feas-row head"><span>Attribute</span><span>Requirement</span><span>Grade / Route</span><span>Result</span></div>
+              <div class="feas-row" data-f="1"><span>Thickness range</span><span class="num">8.00 mm</span><span class="num">2.00 – 12.70 mm</span><span class="ostat good"><span class="d"></span>OK</span></div>
+              <div class="feas-row" data-f="2"><span>Chemical analysis · C</span><span class="num">≤ 0.12 %</span><span class="num">0.08 %</span><span class="ostat good"><span class="d"></span>OK</span></div>
+              <div class="feas-row" data-f="3"><span>Chemical analysis · Mn</span><span class="num">≤ 1.50 %</span><span class="num">1.35 %</span><span class="ostat good"><span class="d"></span>OK</span></div>
+              <div class="feas-row" data-f="4"><span>Tensile test · ReH</span><span class="num">≥ 355 MPa</span><span class="num">385 MPa</span><span class="ostat good"><span class="d"></span>OK</span></div>
+              <div class="feas-row" data-f="5"><span>Tensile test · Rm</span><span class="num">430 – 550 MPa</span><span class="num">480 MPa</span><span class="ostat good"><span class="d"></span>OK</span></div>
+            </div>
+            <div class="feas-legend"><span class="ostat good"><span class="d"></span>within limits</span><span class="ostat err"><span class="d"></span>deviation — highlighted in red</span></div>
+            <div class="ppath" id="ppath">Production path assigned: HSM Line 2 → Pickling → Slitting · Item 10 released for planning.</div>
+          </div>
+        </div>
+        <div class="toast" id="toast"></div>
+      </div>
+      <!-- replay visuals -->
+      <div class="pw-hl" id="hl"></div>
+      <div class="pw-tip" id="tip"></div>
+      <div class="pw-point" id="point"></div>
+      <!-- Hilde speaking -->
+      <div class="hilde-say" id="say">
+        <div class="av"><img src="hilde.svg" alt=""></div>
+        <div class="bubble">
+          <div class="who">Hildegard <span class="bars"><i></i><i></i><i></i><i></i></span><span class="grip">⠿ drag to move · double-click to reset</span></div>
+          <div id="sayText"></div>
+          <div class="src" id="saySrc"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════ RECORDER ══════ -->
+    <aside class="recorder">
+      <div class="r-win"><i></i><i></i><i></i><span>Recorder</span></div>
+      <div class="r-debug"><span>'Hildegard' started debugging this browser</span><span class="cancel">Cancel</span><span class="x">✕</span></div>
+      <div class="r-header">
+        <div class="r-header-top">
+          <span class="r-logo">pulse<sup>XP</sup></span><span class="r-logo-b">Recorder</span>
+          <button class="r-gear" id="openSettings" title="Hildegard voice settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
+          <span class="r-account">Demo User <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 3.5 3 3 3-3"/></svg></span>
+        </div>
+        <div class="r-tabs"><span class="r-tab active">Record</span><span class="r-tab">Upload</span><span class="r-tab">Tests</span></div>
+      </div>
+      <div class="r-body">
+        <div class="r-card">
+          <div class="r-card-head"><h4>Record Process</h4><span class="r-stopbtn">Stop <i></i></span></div>
+          <div class="r-desc">Record, assert and validate your process here. Every process needs at least one URL navigation.</div>
+          <div class="r-sub">
+            <b>Steps</b>
+            <div class="mode" id="mode">
+              <button data-m="test">Test</button>
+              <button data-m="train" class="on"><img src="hilde.svg" alt="">Training</button>
+            </div>
+          </div>
+          <div class="r-steps" id="steps"></div>
+          <div class="r-bundle"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h3l1.5 1.5h4.5A1.5 1.5 0 0 1 14 5v7.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 12.5v-9Z"/></svg><span id="bundle">—</span></div>
+          <div class="r-play">
+            <button class="replay" id="play"><svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z"/></svg>Replay</button>
+            <button class="stop" id="stop" disabled><svg viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="2" width="8" height="8" rx="1"/></svg>Stop</button>
+          </div>
+          <div class="r-status">Status: <b id="status">Ready</b></div>
+          <div class="r-footer">
+            <span class="r-reload"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13.5 8A5.5 5.5 0 1 1 11.8 4"/><path d="M13.5 2.5V5.5H10.5"/></svg>Reload: On</span>
+            <span class="r-fbtns"><span class="r-fbtn undo">↶ Undo</span><span class="r-fbtn redo">↷ Redo</span><span class="r-fbtn del">Delete</span></span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="how">
+    <div><span class="k">Author</span><b>Type once, per step</b><p>The explanation lives in the step settings — next to “Take a screenshot” and “Optional step”.</p></div>
+    <div><span class="k">Generate</span><b>HephAIst → MP3</b><p>pulseXP sends the text to HephAIst, which returns a professional English voice clip within seconds.</p></div>
+    <div><span class="k">Share</span><b>Audio travels with the test</b><p>On upload the MP3s are bundled with the <code>.spec.ts</code>. Whoever loads the test case gets Hildegard too.</p></div>
+    <div><span class="k">Replay</span><b>Step waits for Hildegard</b><p>In training mode the next step starts only when the action <i>and</i> the explanation have finished.</p></div>
+  </div>
+</div>
+<footer>© 2026 metalsXP GmbH · Simulated product view for demonstration purposes · Not a public product offering</footer>
+
+<!-- ── Hilde settings ── -->
+<div class="modal" id="settings">
+  <div class="mcard">
+    <div class="mhead"><img src="hilde.svg" alt=""><div><h3>Hildegard · Voice settings</h3><p>Live generation through HephAIst (Open WebUI)</p></div></div>
+    <div class="mbody">
+      <div class="mf"><label for="sUrl">HephAIst server</label><input id="sUrl" value="https://hephaist.ai"><small>Calls <code>POST /api/v1/audio/speech</code></small></div>
+      <div class="mf"><label for="sKey">API key</label><input id="sKey" type="password" placeholder="sk-… (dedicated TTS user)"><small>Kept only in this browser tab (sessionStorage). Never stored in the page or in Git.</small></div>
+      <div class="mf"><label for="sVoice">Voice</label>
+        <select id="sVoice">
+          <option value="en-US-AvaMultilingualNeural">Ava · US · warm (female)</option>
+          <option value="en-US-EmmaMultilingualNeural">Emma · US · friendly (female)</option>
+          <option value="en-GB-SoniaNeural">Sonia · UK · professional (female)</option>
+          <option value="en-US-AndrewMultilingualNeural">Andrew · US · calm (male)</option>
+        </select></div>
+      <div class="mnote">Mockup note: without a key, steps use the pre-generated clips; edited texts fall back to the browser's built-in voice so the demo always plays.</div>
+      <div class="mtest" id="sTest"></div>
+    </div>
+    <div class="mfoot"><button class="cx" id="sTestBtn">Test connection</button><button class="cx" id="sClose">Close</button><button class="ok" id="sSave">Save</button></div>
+  </div>
+</div>
+</div><!-- /siteContent -->
+
+<script>
+/* ═════════════ auth gate (same user/hash/session key as ../index.html) ═════════════ */
+(function () {
+  var VALID_USER = 'hildegard';
+  var VALID_PASS_HASH = '446e0676e3f191895a610231eddfe85ef290bed95a7749ba0019159686e23eaf';
+  var SESSION_KEY = 'pulsexp_hildegard_auth';
+  var gate = document.getElementById('authGate'), site = document.getElementById('siteContent');
+  function ok(){ gate.style.display='none'; site.hidden=false; }
+  function sha(t){ return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return x.toString(16).padStart(2,'0');}).join('');}); }
+  try { if (sessionStorage.getItem(SESSION_KEY) === '1') ok(); } catch(e){}
+  document.getElementById('authForm').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var u = document.getElementById('authUser').value.trim().toLowerCase();
+    sha(document.getElementById('authPass').value).then(function (h) {
+      if (u === VALID_USER && h === VALID_PASS_HASH) { try{sessionStorage.setItem(SESSION_KEY,'1');}catch(e){} ok(); }
+      else document.getElementById('authError').classList.add('visible');
+    });
+  });
+})();
+
+/* ═════════════ test case model ═════════════ */
+const ICON = {
+  nav:'<svg class="st-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.2"/><path d="M1.8 8h12.4M8 1.8c1.8 1.8 2.6 3.9 2.6 6.2S9.8 12.4 8 14.2C6.2 12.4 5.4 10.3 5.4 8S6.2 3.6 8 1.8Z"/></svg>',
+  fill:'<svg class="st-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.8" y="4" width="12.4" height="8" rx="1.6"/><path d="M5 6.5v3"/></svg>',
+  click:'<svg class="st-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 2.5v7.8l2-1.8 1.6 3.6 1.5-.7-1.6-3.5h2.8L5 2.5Z"/></svg>',
+  assert:'<svg class="st-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 8.4 6.4 11.6 13 4.6"/></svg>'
+};
+const PRE = 'audio/'; // pre-generated clips (HephAIst)
+const STEPS = [
+  {k:'nav',   t:'Go to https://s4h.rp.metalsxp.com/ui#SalesOrder-create', sel:'page.goto()', target:null},
+  {k:'fill',  t:"Fill 'Sold-To Party' with '100245'", sel:'ui5:role=input[label="Sold-To Party"]', target:'fSold', val:'100245 · Steel Dynamics AG'},
+  {k:'fill',  t:"Fill 'Customer Reference' with 'PO-77815'", sel:'ui5:role=input[label="Customer Reference"]', target:'fPo', val:'PO-77815'},
+  {k:'fill',  t:"Fill 'Steel Grade' with 'S355MC'", sel:'ui5:role=input[label="Steel Grade"]', target:'fGrade', val:'S355MC'},
+  {k:'fill',  t:"Fill 'Nominal Thickness' with '8.00'", sel:'ui5:role=input[label="Nominal Thickness (mm)"]', target:'fThick', val:'8.00',
+   hilde:"Enter the grade and the nominal thickness. The check confirms that the thickness lies within the permitted range for this hot rolled product.", clip:'feas-2.mp3'},
+  {k:'click', t:"Click 'Run FEAS Check'", sel:'ui5:role=button[text="Run FEAS Check"]', target:'bFeas',
+   hilde:"In the sales order item, the system now runs the FEAS check against the requested steel grade and the customer's external specification.", clip:'feas-1.mp3'},
+  {k:'assert',t:"Assert all FEAS attributes are 'OK'", sel:'ui5:role=table[title="FEAS Check Result"]', target:'feasTable',
+   hilde:"Next, the FEAS check compares the chemical analysis and the tensile test limits with the customer requirements. Any deviation is highlighted in red.", clip:'feas-3.mp3'},
+  {k:'click', t:"Click 'Assign Production Path'", sel:'ui5:role=button[text="Assign Production Path"]', target:'bPath'},
+  {k:'click', t:"Click 'Release for Planning'", sel:'ui5:role=button[text="Release for Planning"]', target:'bRel',
+   hilde:"Once all attributes are feasible, the production path is assigned and the sales order item can be released for planning.", clip:'feas-4.mp3'}
+];
+// per-step Hilde state
+STEPS.forEach((s,i)=>{
+  s.i=i; s.shot = i===5 || i===8;
+  s.h = { on: !!s.hilde, text: s.hilde||'', audioUrl: s.clip ? PRE+s.clip : null, audioText: s.hilde||'', dur:null, src: s.clip ? 'pre' : null, state:'idle' };
+});
+
+/* ═════════════ settings (sessionStorage only) ═════════════ */
+const S = { url:'https://hephaist.ai', key:'', voice:'en-US-AvaMultilingualNeural' };
+try { Object.assign(S, JSON.parse(sessionStorage.getItem('hildevoice_cfg')||'{}')); } catch(e){}
+const $ = id => document.getElementById(id);
+function saveCfg(){ try{ sessionStorage.setItem('hildevoice_cfg', JSON.stringify(S)); }catch(e){} }
+
+/* ═════════════ render recorder steps ═════════════ */
+const stepsEl = $('steps');
+function esc(t){return t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+const MIN_WORDS=3, MAX_WORDS=99;
+function countWords(t){ return (t.trim().match(/\S+/g)||[]).length; }
+function validWords(t){ const n=countWords(t); return n>=MIN_WORDS && n<=MAX_WORDS; }
+function wordInfo(t){ const n=countWords(t); if(!n) return ''; return `<b class="${n<MIN_WORDS||n>MAX_WORDS?'bad':''}">${n}/${MAX_WORDS} words</b> · ≈ ${estSec(t)} s`; }
+function estSec(t){ const w=(t.trim().match(/\S+/g)||[]).length; return w? Math.max(1, Math.round(w/2.6)) : 0; }
+
+function chipFor(s){
+  const h=s.h;
+  if(h.state==='busy') return '<span class="chip busy">Generating…</span>';
+  if(h.state==='err')  return '<span class="chip err" title="'+esc(h.err||'')+'">Voice failed</span>';
+  if(!h.text.trim())   return '<span class="chip none">Type an explanation</span>';
+  if(countWords(h.text)<MIN_WORDS) return '<span class="chip none">Min. '+MIN_WORDS+' words</span>';
+  if(h.audioUrl && h.audioText===h.text) return '<span class="chip ready">✓ Voice ready'+(h.dur?' · '+h.dur.toFixed(1)+' s':'')+'</span>';
+  if(h.audioUrl)       return '<span class="chip stale">Text changed · regenerate</span>';
+  return '<span class="chip stale">No voice yet</span>';
+}
+function renderStep(s){
+  let el = stepsEl.children[s.i];
+  const open = el && el.classList.contains('open');
+  const on = s.h.on;
+  const html = `
+    <div class="st-row">
+      ${ICON[s.k]}<span class="st-grip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h10M3 8h10M3 11h10"/></svg></span>
+      <div class="st-txt" title="${esc(s.t)}">${esc(s.t)}</div>
+      <img class="st-hilde ${on && s.h.text.trim()?'on':''}" src="hilde.svg" alt="" title="Hildegard explains this step">
+      <span class="st-acts"><span class="up"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 7.5 3-3 3 3"/></svg></span><span class="del"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3.5 3.5 5 5m0-5-5 5"/></svg></span></span>
+      <span class="st-open" title="Show step settings"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 3.5 4.5 4.5L6 12.5"/></svg></span>
+    </div>
+    <div class="st-more">
+      <div><div class="set-l">Step duration</div><div class="dur"><input type="range" min="1" max="60" value="10"><b>10s</b></div></div>
+      <div><div class="set-l">Description</div><input class="desc-in" placeholder="Describe what this step targets"></div>
+      <div class="tgl"><span class="sw ${s.shot?'on':''}" data-t="shot"></span><div><b>Take a screenshot</b><small>Captured after this step runs and attached to the report.</small></div></div>
+      <div class="tgl"><span class="sw" data-t="opt"></span><div><b>Optional step</b><small>Attempted with a short budget, and skipped instead of failing the run.</small></div></div>
+      <div class="tgl hilde"><span class="sw ${on?'on':''}" data-t="hilde"></span><div><b>Let Hildegard explain <span class="new">NEW</span></b><small>Plays a voice explanation when this step is reached. The next step starts only after the clip has finished.</small></div></div>
+      <div class="hbox ${on?'show':''}">
+        <div class="hbox-head"><img src="hilde.svg" alt=""><b>Hildegard says…</b><small>English · 3–99 words</small></div>
+        <textarea placeholder="Type what Hildegard should explain at this step…">${esc(s.h.text)}</textarea>
+        <div class="hbox-meta">
+          <span class="chipwrap">${chipFor(s)}</span>
+          <span class="est">${wordInfo(s.h.text)}</span>
+          <span class="hbox-btns">
+            <button class="hbtn prev" data-a="prev" ${validWords(s.h.text)?'':'disabled'}><svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z"/></svg>Preview</button>
+            <button class="hbtn gen" data-a="gen" ${validWords(s.h.text)?'':'disabled'}>Generate voice</button>
+          </span>
+        </div>
+        <div class="hbox-note">The clip is stored with the step and uploaded together with the test case. Step duration applies to the action only — the voice clip does not count against it.</div>
+      </div>
+      <button class="reset" type="button">Reset <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.5 8A5.5 5.5 0 1 1 11.8 4"/><path d="M13.5 2.5V5.5H10.5"/></svg></button>
+    </div>`;
+  if(!el){ el=document.createElement('div'); el.className='r-step'; stepsEl.appendChild(el); el.innerHTML=html; wire(el,s); }
+  else { // only refresh dynamic parts, keep textarea focus/caret
+    el.querySelector('.chipwrap').innerHTML = chipFor(s);
+    el.querySelector('.est').innerHTML = wordInfo(s.h.text);
+    el.querySelector('.st-hilde').classList.toggle('on', !!(s.h.on && s.h.text.trim()));
+    el.querySelector('.hbox').classList.toggle('show', s.h.on);
+    el.querySelector('[data-t="hilde"]').classList.toggle('on', s.h.on);
+    el.querySelectorAll('.hbtn').forEach(b=>b.disabled=!validWords(s.h.text) || s.h.state==='busy');
+  }
+  if(open) el.classList.add('open');
+}
+function wire(el,s){
+  el.querySelector('.st-open').addEventListener('click',()=>el.classList.toggle('open'));
+  el.querySelector('.st-txt').addEventListener('click',()=>el.classList.toggle('open'));
+  const r=el.querySelector('.dur input'), rb=el.querySelector('.dur b'); r.addEventListener('input',()=>rb.textContent=r.value+'s');
+  el.querySelectorAll('.sw').forEach(sw=>sw.addEventListener('click',()=>{
+    if(sw.dataset.t==='hilde'){ s.h.on=!s.h.on; renderStep(s); updBundle(); if(s.h.on) el.querySelector('textarea').focus(); }
+    else sw.classList.toggle('on');
+  }));
+  el.querySelector('textarea').addEventListener('input',e=>{
+    const ta=e.target;
+    if(countWords(ta.value)>MAX_WORDS){ // hard limit: keep the first 99 words
+      const m=ta.value.match(new RegExp('^\\s*(?:\\S+\\s+){'+(MAX_WORDS-1)+'}\\S+')); if(m){ ta.value=m[0]; }
+      const est=el.querySelector('.est'); est.classList.add('flash'); setTimeout(()=>est.classList.remove('flash'),700);
+    }
+    s.h.text=ta.value; if(s.h.state==='err') s.h.state='idle'; renderStep(s); updBundle(); });
+  el.querySelector('[data-a="gen"]').addEventListener('click',()=>generate(s));
+  el.querySelector('[data-a="prev"]').addEventListener('click',()=>{ stopAudio(); speak(s); });
+}
+function updBundle(){
+  const ready = STEPS.filter(s=>s.h.on && validWords(s.h.text) && s.h.audioUrl && s.h.audioText===s.h.text);
+  const need  = STEPS.filter(s=>s.h.on && validWords(s.h.text) && !(s.h.audioUrl && s.h.audioText===s.h.text));
+  $('bundle').innerHTML = `<b>${ready.length}</b> voice clip${ready.length===1?'':'s'} bundled with this test case on upload`+(need.length?` · <b style="color:#b35a00">${need.length}</b> to generate`:'');
+}
+STEPS.forEach(renderStep);
+// open the first Hilde step so the feature is visible immediately
+stepsEl.children[4].classList.add('open');
+updBundle();
+// read real durations of pre-generated clips
+STEPS.forEach(s=>{ if(s.h.audioUrl){ const a=new Audio(); a.preload='metadata'; a.src=s.h.audioUrl;
+  a.addEventListener('loadedmetadata',()=>{ if(isFinite(a.duration)){ s.h.dur=a.duration; renderStep(s);} });
+  a.addEventListener('error',()=>{ s.h.audioUrl=null; s.h.src=null; renderStep(s); updBundle(); }); } });
+
+/* ═════════════ HephAIst voice generation ═════════════ */
+async function generate(s){
+  if(!validWords(s.h.text)) return;
+  if(!S.key){ openSettings('Add a HephAIst API key to generate voices live.'); return; }
+  s.h.state='busy'; renderStep(s);
+  try{
+    const r = await fetch(S.url.replace(/\/+$/,'')+'/api/v1/audio/speech',{
+      method:'POST', headers:{'Authorization':'Bearer '+S.key,'Content-Type':'application/json'},
+      body: JSON.stringify({input:s.h.text, voice:S.voice})
+    });
+    if(!r.ok){ let d=''; try{ d=(await r.json()).detail; }catch(e){} throw new Error('HTTP '+r.status+(d?' – '+d:'')); }
+    const blob = await r.blob();
+    if(s.h.src==='live' && s.h.audioUrl) URL.revokeObjectURL(s.h.audioUrl);
+    s.h.audioUrl = URL.createObjectURL(blob); s.h.audioText = s.h.text; s.h.src='live'; s.h.state='idle'; s.h.dur=null;
+    const a=new Audio(s.h.audioUrl); a.addEventListener('loadedmetadata',()=>{ if(isFinite(a.duration)){ s.h.dur=a.duration; renderStep(s);} });
+  }catch(e){
+    s.h.state='err'; s.h.err = (e && e.message || String(e)) + (e instanceof TypeError ? ' (network/CORS – is the page origin allowed on HephAIst?)' : '');
+    console.warn('[HildeVoice]', s.h.err);
+  }
+  renderStep(s); updBundle();
+}
+
+/* ═════════════ playback of Hilde (audio or browser fallback) ═════════════ */
+let curAudio=null, stopFlag=false, pendingDone=null;
+function stopAudio(){ if(curAudio){ curAudio.pause(); curAudio=null; } try{ speechSynthesis.cancel(); }catch(e){} hideSay(); if(pendingDone){ const d=pendingDone; pendingDone=null; d(); } }
+
+function speak(s){
+  const h=s.h; const text=h.text.trim();
+  if(!text || !validWords(text)) return Promise.resolve();
+  const fresh = h.audioUrl && h.audioText===h.text;
+  return new Promise(res=>{
+    let finished=false;
+    const done=()=>{ if(finished) return; finished=true; if(pendingDone===done) pendingDone=null; stopKaraoke();
+      const sp=$('sayText').querySelectorAll('.kw'); sp.forEach(x=>{x.classList.remove('cur'); x.classList.add('past');});
+      $('say').classList.remove('talking'); setTimeout(()=>{ if(!curAudio && !pendingDone) hideSay(); }, 450); res(); };
+    if(pendingDone) pendingDone(); pendingDone=done;
+    if(fresh){
+      showSay(text, '');
+      const a=new Audio(h.audioUrl); curAudio=a;
+      const arm=()=>{ if(isFinite(a.duration)){ timeWords(a.duration); K.hopMs=a.duration*1000/K.words.length*.6; K.clock=()=>a.currentTime; karaokeLoop(); } };
+      if(a.readyState>=1) arm(); else a.addEventListener('loadedmetadata',arm,{once:true});
+      a.addEventListener('ended',()=>{ curAudio=null; done(); });
+      a.addEventListener('error',()=>{ curAudio=null; done(); });
+      a.play().catch(()=>{ curAudio=null; done(); });
+    } else if('speechSynthesis' in window){
+      showSay(text,'Preview voice — press “Generate voice” for the final clip');
+      const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate=1;
+      const v=speechSynthesis.getVoices().find(v=>/en(-|_)(US|GB)/i.test(v.lang)); if(v) u.voice=v;
+      // karaoke: use real word boundaries if the engine reports them, otherwise a time estimate
+      const est=Math.max(1.5,estSec(text)); timeWords(est); K.hopMs=est*1000/K.words.length*.6;
+      const t0=performance.now(); let boundary=false; K.clock=()=>(performance.now()-t0)/1000; karaokeLoop();
+      const offs=[]; { let p=0; K.words.forEach(w=>{ const k=text.indexOf(w,p); offs.push(k); p=k+w.length; }); }
+      u.onboundary=e=>{ if(e.name && e.name!=='word') return; if(!boundary){ boundary=true; K.clock=null; }
+        let i=0; while(i+1<offs.length && offs[i+1]<=e.charIndex) i++; setWord(i); };
+      u.onend=done; u.onerror=done; speechSynthesis.speak(u);
+      setTimeout(done, (est+4)*1000); // safety net
+    } else { showSay(text,''); const est=Math.max(1.5,estSec(text)); timeWords(est); const t0=performance.now(); K.clock=()=>(performance.now()-t0)/1000; karaokeLoop(); setTimeout(done, est*1000); }
+  });
+}
+
+/* ═════════════ SAP screen simulation ═════════════ */
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const browser=$('browser'), hl=$('hl'), tip=$('tip'), point=$('point');
+/* ═════════════ caption overlay: draggable + karaoke dot ═════════════ */
+let sayMoved=false;
+function placeSay(){
+  if(sayMoved) return;
+  const r=browser.getBoundingClientRect(), el=$('say');
+  el.style.top=''; el.style.bottom='18px';
+  el.style.left=Math.max(16,r.left+16)+'px'; el.style.width=Math.max(260,Math.min(760,r.width-32))+'px';
+}
+window.addEventListener('resize',()=>{ if(sayMoved){ clampSay(); } else placeSay(); });
+function clampSay(){
+  const el=$('say'), r=el.getBoundingClientRect();
+  const x=Math.min(Math.max(8,r.left), window.innerWidth-r.width-8), y=Math.min(Math.max(8,r.top), window.innerHeight-r.height-8);
+  el.style.left=x+'px'; el.style.top=y+'px'; el.style.bottom='auto';
+}
+(function dragSay(){
+  const el=$('say'); let sx=0, sy=0, ox=0, oy=0, drag=false;
+  el.addEventListener('pointerdown',e=>{
+    if(!el.classList.contains('show')) return;
+    const r=el.getBoundingClientRect(); drag=true; sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
+    el.style.top=oy+'px'; el.style.bottom='auto'; el.classList.add('dragging'); el.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  el.addEventListener('pointermove',e=>{ if(!drag) return; sayMoved=true;
+    el.style.left=(ox+e.clientX-sx)+'px'; el.style.top=(oy+e.clientY-sy)+'px'; clampSay(); });
+  const end=e=>{ if(!drag) return; drag=false; el.classList.remove('dragging'); try{ el.releasePointerCapture(e.pointerId);}catch(_){} };
+  el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+  el.addEventListener('dblclick',()=>{ sayMoved=false; placeSay(); });
+})();
+
+// words + timing model
+const K = { words:[], starts:[], idx:-1, raf:0, clock:null, from:null, to:null, t0:0 };
+function wordWeight(w){ const core=w.replace(/[^\p{L}\p{N}]/gu,''); let x=Math.max(2, core.length)+1.5; if(/[,;:]$/.test(w)) x+=4; if(/[.!?]$/.test(w)) x+=7; return x; }
+function buildKaraoke(text){
+  const box=$('sayText'); K.words=text.trim().split(/\s+/);
+  box.innerHTML = K.words.map((w,i)=>`<span class="kw" data-i="${i}">${esc(w)}</span>`).join(' ') + '<span class="kdot" id="kdot"></span>';
+  K.idx=-1; K.from=null; K.to=null;
+}
+function timeWords(total){ // spread the clip duration over the words, weighted by length and punctuation pauses
+  const lead=Math.min(.18,total*.03), tail=Math.min(.35,total*.04), span=Math.max(.2,total-lead-tail);
+  const ws=K.words.map(wordWeight), W=ws.reduce((a,b)=>a+b,0); let acc=0;
+  K.starts=ws.map(w=>{ const s=lead+acc/W*span; acc+=w; return s; });
+}
+function dotTarget(i){ const w=$('sayText').querySelector(`.kw[data-i="${i}"]`); if(!w) return null; return {x:w.offsetLeft+w.offsetWidth/2, y:w.offsetTop}; }
+function setWord(i){
+  if(i===K.idx || i<0) return;
+  const spans=$('sayText').querySelectorAll('.kw');
+  spans.forEach((s,j)=>{ s.classList.toggle('cur',j===i); s.classList.toggle('past',j<i); });
+  const tgt=dotTarget(i); if(!tgt) return;
+  K.from = K.to || {x:tgt.x, y:tgt.y}; K.to=tgt; K.t0=performance.now(); K.idx=i;
+}
+function drawDot(now){
+  const d=$('kdot'); if(!d || !K.to) return;
+  const hop=Math.min(240, Math.max(120, (K.hopMs||200))); const p=Math.min(1,(now-K.t0)/hop);
+  const x=K.from.x+(K.to.x-K.from.x)*p, y=K.from.y+(K.to.y-K.from.y)*p - Math.sin(Math.PI*p)*14;
+  d.style.transform=`translate(${x-4}px,${y-11}px)`; d.classList.add('on');
+}
+function karaokeLoop(){
+  cancelAnimationFrame(K.raf);
+  const tick=now=>{
+    if(K.clock){ const t=K.clock(); let i=0; while(i+1<K.starts.length && K.starts[i+1]<=t) i++; if(t>=K.starts[0]-.05) setWord(i); }
+    drawDot(now); K.raf=requestAnimationFrame(tick);
+  };
+  K.raf=requestAnimationFrame(tick);
+}
+function stopKaraoke(){ cancelAnimationFrame(K.raf); K.clock=null; }
+function showSay(text,src){
+  placeSay(); buildKaraoke(text); $('saySrc').textContent=src||''; $('saySrc').style.display=src?'':'none';
+  $('say').classList.add('show','talking');
+}
+function hideSay(){ stopKaraoke(); $('say').classList.remove('show','talking'); }
+
+function rectOf(id){ const e=$(id), b=browser.getBoundingClientRect(), r=e.getBoundingClientRect(); return {x:r.left-b.left, y:r.top-b.top, w:r.width, h:r.height}; }
+function highlight(id, sel){
+  if(!id){ hl.classList.remove('show'); tip.classList.remove('show'); return; }
+  const r=rectOf(id); Object.assign(hl.style,{left:r.x+'px',top:r.y+'px',width:r.w+'px',height:r.h+'px'}); hl.classList.add('show');
+  tip.textContent=sel; Object.assign(tip.style,{left:Math.max(6,r.x)+'px',top:(r.y+r.h+5)+'px'}); tip.classList.add('show');
+}
+function clickPoint(id){ const r=rectOf(id); point.style.left=(r.x+r.w/2)+'px'; point.style.top=(r.y+r.h/2)+'px'; point.classList.remove('go'); void point.offsetWidth; point.classList.add('go'); }
+function toast(t){ $('toast').textContent=t; $('toast').classList.add('show'); setTimeout(()=>$('toast').classList.remove('show'),2200); }
+async function typeInto(id,val){
+  const f=$(id); f.classList.add('focus'); const v=f.querySelector('.v'); v.textContent='';
+  for(const ch of val){ if(stopFlag) break; v.textContent+=ch; await sleep(55); }
+  await sleep(150); f.classList.remove('focus');
+}
+function resetSap(){
+  ['fSold','fPo','fGrade','fThick'].forEach(id=>{ $(id).querySelector('.v').textContent=''; $(id).classList.remove('focus'); });
+  $('fSpec').querySelector('.v').textContent='—';
+  ['hGrade','hThick'].forEach(id=>{ $(id).textContent=''; $(id).className='hint2'; });
+  $('bFeas').disabled=true; $('bPath').disabled=true; $('bRel').disabled=true;
+  $('feasTable').classList.remove('show'); $('feasEmpty').style.display='';
+  document.querySelectorAll('.feas-row[data-f]').forEach(r=>r.classList.add('pending'));
+  $('ppath').classList.remove('show');
+  setStat('kFeas','neutral','Not checked'); setStat('kPlan','neutral','Open'); $('kDoc').textContent='—';
+  $('url').textContent='https://s4h.rp.metalsxp.com/ui#Shell-home'; $('appTitle').textContent='Home';
+  highlight(null);
+}
+function setStat(id,cls,txt){ const e=$(id); e.className='ostat '+cls; e.innerHTML='<span class="d"></span>'+txt; }
+async function perform(s){
+  switch(s.i){
+    case 0: $('url').textContent='https://s4h.rp.metalsxp.com/ui#SalesOrder-create'; $('appTitle').textContent='Create Sales Order'; await sleep(900); break;
+    case 1: highlight(s.target,s.sel); await sleep(350); await typeInto(s.target,s.val); $('fSpec').querySelector('.v').textContent='EXT-SPEC SD-4471 · EN 10149-2'; break;
+    case 2: highlight(s.target,s.sel); await sleep(350); await typeInto(s.target,s.val); break;
+    case 3: highlight(s.target,s.sel); await sleep(350); await typeInto(s.target,s.val); $('hGrade').textContent='Hot rolled · EN 10149-2'; break;
+    case 4: highlight(s.target,s.sel); await sleep(350); await typeInto(s.target,s.val);
+            $('hThick').textContent='✓ within 2.00 – 12.70 mm'; $('hThick').className='hint2 good'; $('bFeas').disabled=false; break;
+    case 5: highlight(s.target,s.sel); await sleep(450); clickPoint(s.target); $('bFeas').classList.add('pressed'); await sleep(180); $('bFeas').classList.remove('pressed');
+            $('feasEmpty').style.display='none'; $('feasTable').classList.add('show'); setStat('kFeas','warn','Checking…');
+            for(const r of document.querySelectorAll('.feas-row[data-f]')){ if(stopFlag) break; await sleep(420); r.classList.remove('pending'); }
+            setStat('kFeas','good','Feasible'); break;
+    case 6: highlight(s.target,s.sel); await sleep(1200); toast('Assertion passed · 5 of 5 attributes OK'); $('bPath').disabled=false; break;
+    case 7: highlight(s.target,s.sel); await sleep(450); clickPoint(s.target); $('bPath').classList.add('pressed'); await sleep(180); $('bPath').classList.remove('pressed');
+            $('ppath').textContent='Production path assigned: HSM Line 2 → Pickling → Slitting.'; $('ppath').classList.add('show'); $('bRel').disabled=false; break;
+    case 8: highlight(s.target,s.sel); await sleep(450); clickPoint(s.target); $('bRel').classList.add('pressed'); await sleep(180); $('bRel').classList.remove('pressed');
+            $('ppath').textContent='Production path assigned: HSM Line 2 → Pickling → Slitting · Item 10 released for planning.';
+            setStat('kPlan','good','Released'); $('kDoc').textContent='Standard Order 14326'; toast('Standard Order 14326 has been saved'); break;
+  }
+}
+
+/* ═════════════ replay orchestration ═════════════ */
+let mode='train', running=false;
+$('mode').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b||running) return; mode=b.dataset.m; $('mode').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); });
+function setStatus(t){ $('status').textContent=t; }
+async function replay(){
+  if(running) return; running=true; stopFlag=false;
+  $('play').disabled=true; $('stop').disabled=false;
+  resetSap(); [...stepsEl.children].forEach(c=>c.classList.remove('active','done'));
+  try{ speechSynthesis.getVoices(); }catch(e){}
+  for(const s of STEPS){
+    if(stopFlag) break;
+    const el=stepsEl.children[s.i]; el.classList.add('active'); stepsEl.scrollTo({top: el.offsetTop - stepsEl.offsetTop - 8, behavior:'smooth'});
+    const talk = mode==='train' && s.h.on && validWords(s.h.text);
+    setStatus(`Step ${s.i+1}/${STEPS.length}`+(talk?' · Hildegard is explaining':''));
+    // the next step starts only when BOTH the action and Hilde's explanation are finished
+    await Promise.all([ perform(s), talk ? speak(s) : Promise.resolve() ]);
+    el.classList.remove('active'); el.classList.add('done');
+    await sleep(talk? 350 : 250);
+  }
+  highlight(null); hideSay();
+  setStatus(stopFlag ? 'Stopped' : (mode==='train' ? '✓ Passed · training run complete' : '✓ Passed'));
+  running=false; $('play').disabled=false; $('stop').disabled=true;
+}
+$('play').addEventListener('click',replay);
+$('stop').addEventListener('click',()=>{ stopFlag=true; stopAudio(); });
+
+/* ═════════════ settings modal ═════════════ */
+function openSettings(msg){ $('sUrl').value=S.url; $('sKey').value=S.key; $('sVoice').value=S.voice; $('sTest').textContent=msg||''; $('sTest').style.color='#b35a00'; $('settings').classList.add('show'); }
+$('openSettings').addEventListener('click',()=>openSettings());
+$('sClose').addEventListener('click',()=>$('settings').classList.remove('show'));
+$('sSave').addEventListener('click',()=>{ S.url=$('sUrl').value.trim()||'https://hephaist.ai'; S.key=$('sKey').value.trim(); S.voice=$('sVoice').value; saveCfg(); $('settings').classList.remove('show'); });
+$('sTestBtn').addEventListener('click',async()=>{
+  const url=$('sUrl').value.trim().replace(/\/+$/,''), key=$('sKey').value.trim(); const t=$('sTest');
+  t.style.color='#5B6B7A'; t.textContent='Testing…';
+  try{ const r=await fetch(url+'/api/v1/auths/',{headers:{'Authorization':'Bearer '+key}});
+    if(r.ok){ const me=await r.json(); t.style.color='#56702c'; t.textContent='✓ Connected as '+(me.name||me.email)+' ('+me.role+')'; }
+    else { t.style.color='#b3243c'; t.textContent='✗ HTTP '+r.status+' – check the API key'; } }
+  catch(e){ t.style.color='#b3243c'; t.textContent='✗ Not reachable from this page (network/CORS). The page origin must be allowed on HephAIst.'; }
+});
+</script>
+</body>
+</html>
