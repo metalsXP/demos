@@ -536,9 +536,12 @@ const ICON = {
 const PRE = 'audio/'; // pre-generated clips (HephAIst)
 const STEPS = [
   {k:'nav',   t:'Go to https://s4h.rp.metalsxp.com/ui#SalesOrder-create', sel:'page.goto()', target:null},
-  {k:'fill',  t:"Fill 'Sold-To Party' with '100245'", sel:'ui5:role=input[label="Sold-To Party"]', target:'fSold', val:'100245 · Steel Dynamics AG'},
-  {k:'fill',  t:"Fill 'Customer Reference' with 'PO-77815'", sel:'ui5:role=input[label="Customer Reference"]', target:'fPo', val:'PO-77815'},
-  {k:'fill',  t:"Fill 'Steel Grade' with 'S355MC'", sel:'ui5:role=input[label="Steel Grade"]', target:'fGrade', val:'S355MC'},
+  {k:'fill',  t:"Fill 'Sold-To Party' with '100245'", sel:'ui5:role=input[label="Sold-To Party"]', target:'fSold', val:'100245 · Steel Dynamics AG',
+   hilde:"First, we enter the sold-to party. This is the customer who places the order.", clip:'intro-1.mp3'},
+  {k:'fill',  t:"Fill 'Customer Reference' with 'PO-77815'", sel:'ui5:role=input[label="Customer Reference"]', target:'fPo', val:'PO-77815',
+   hilde:"Next, we add the customer's purchase order number as the reference.", clip:'intro-2.mp3'},
+  {k:'fill',  t:"Fill 'Steel Grade' with 'S355MC'", sel:'ui5:role=input[label="Steel Grade"]', target:'fGrade', val:'S355MC',
+   hilde:"Now we enter the steel grade that the customer has ordered.", clip:'intro-3.mp3'},
   {k:'fill',  t:"Fill 'Nominal Thickness' with '8.00'", sel:'ui5:role=input[label="Nominal Thickness (mm)"]', target:'fThick', val:'8.00',
    hilde:"Enter the grade and the nominal thickness. The check confirms that the thickness lies within the permitted range for this hot rolled product.", clip:'feas-2.mp3'},
   {k:'click', t:"Click 'Run FEAS Check'", sel:'ui5:role=button[text="Run FEAS Check"]', target:'bFeas',
