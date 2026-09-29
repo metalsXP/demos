@@ -204,6 +204,11 @@
   .r-stopbtn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3d5f7c,#5b7d99);color:#fff;font-size:.82rem;font-weight:700;padding:7px 14px;border-radius:8px}
   .r-stopbtn i{width:13px;height:13px;border:1.8px solid #fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
   .r-stopbtn i::after{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
+  .r-stopbtn{border:0;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
+  .r-stopbtn:disabled{background:#eef1f4;color:#5B6B7A;cursor:default}
+  .r-stopbtn:disabled i{border-color:#5B6B7A}.r-stopbtn:disabled i::after{background:#5B6B7A}
+  .r-stopbtn:not(:disabled) i::after{animation:recPulse 1s ease-in-out infinite}
+  @keyframes recPulse{50%{opacity:.25}}
   .r-desc{padding:10px 16px 2px;font-size:.78rem;color:#6b6f75;line-height:1.45}
   .r-sub{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 16px 8px}
   .r-sub b{font-size:.86rem;color:#111}
@@ -455,7 +460,7 @@
       </div>
       <div class="r-body">
         <div class="r-card">
-          <div class="r-card-head"><h4>Record Process</h4><span class="r-stopbtn">Stop <i></i></span></div>
+          <div class="r-card-head"><h4>Record Process</h4><button class="r-stopbtn" id="stopTop" disabled title="Stop replay">Stop <i></i></button></div>
           <div class="r-desc">Record, assert and validate your process here. Every process needs at least one URL navigation.</div>
           <div class="r-sub">
             <b>Steps</b>
@@ -847,7 +852,7 @@ $('mode').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!
 function setStatus(t){ $('status').textContent=t; }
 async function replay(){
   if(running) return; running=true; stopFlag=false;
-  $('play').disabled=true; $('stop').disabled=false;
+  $('play').disabled=true; $('stop').disabled=false; $('stopTop').disabled=false;
   resetSap(); [...stepsEl.children].forEach(c=>c.classList.remove('active','done'));
   try{ speechSynthesis.getVoices(); }catch(e){}
   for(const s of STEPS){
@@ -862,10 +867,11 @@ async function replay(){
   }
   highlight(null); hideSay();
   setStatus(stopFlag ? 'Stopped' : (mode==='train' ? '✓ Passed · training run complete' : '✓ Passed'));
-  running=false; $('play').disabled=false; $('stop').disabled=true;
+  running=false; $('play').disabled=false; $('stop').disabled=true; $('stopTop').disabled=true;
 }
 $('play').addEventListener('click',replay);
 $('stop').addEventListener('click',()=>{ stopFlag=true; stopAudio(); });
+$('stopTop').addEventListener('click',()=>$('stop').click());
 
 /* ═════════════ settings modal ═════════════ */
 function openSettings(msg){ $('sUrl').value=S.url; $('sKey').value=S.key; $('sVoice').value=S.voice; $('sTest').textContent=msg||''; $('sTest').style.color='#b35a00'; $('settings').classList.add('show'); }
