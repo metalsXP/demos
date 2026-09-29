@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>pulseXP — HildeVoice</title>
+<title>Hildegard — HildeVoice</title>
 <link rel="icon" href="hilde.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* pulseXP design system */
+    /* Hildegard design system */
     --ds-primary:#3B5E78; --ds-secondary:#A5679C; --ds-alert:#E96070;
     --color-secondary-dark:#BDCE33; --color-accent-mid:#CDDE66; --ds-success-title:#A1B977;
     --color-secondary-light:#D0C6DB; --ds-text-secondary:#7E777C;
@@ -172,7 +172,7 @@
   @keyframes bar{0%,100%{height:3px}50%{height:11px}}
   .hilde-say .src{font-size:.66rem;color:#8a97a3;margin-top:4px}
 
-  /* ══════════ RECORDER PANEL (mirrors the current pulseXP Recorder UI) ══════════ */
+  /* ══════════ RECORDER PANEL (mirrors the current Hildegard Recorder UI) ══════════ */
   .recorder{background:#fff;border-radius:12px;overflow:hidden;font-size:14px;box-shadow:0 26px 60px rgba(21,35,49,.30),0 3px 10px rgba(21,35,49,.16);position:sticky;top:14px}
   .r-win{background:#323336;display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #1f2022}
   .r-win i{width:12px;height:12px;border-radius:50%;display:block}
@@ -255,7 +255,7 @@
   .hbox-head img{width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 0 0 1.5px var(--ds-secondary)}
   .hbox-head b{font-size:.82rem;color:var(--ds-secondary);font-weight:800;white-space:nowrap}
   .hbox-head small{margin-left:auto;font-size:.66rem;color:#9aa4ad;font-weight:600;white-space:nowrap}
-  .hbox textarea{width:100%;min-height:78px;resize:vertical;border:1px solid #d5dbe1;border-radius:8px;padding:8px 10px;font-size:.82rem;line-height:1.45;color:#1A2332;background:#fff}
+  .hbox textarea{width:100%;min-height:116px;resize:vertical;border:1px solid #d5dbe1;border-radius:8px;padding:8px 10px;font-size:.82rem;line-height:1.45;color:#1A2332;background:#fff}
   .hbox textarea:focus{outline:none;border-color:var(--ds-secondary);box-shadow:0 0 0 2px rgba(165,103,156,.16)}
   .hbox-meta{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
   .chip{font-size:.66rem;font-weight:800;border-radius:999px;padding:3px 9px;display:inline-flex;align-items:center;gap:5px}
@@ -327,7 +327,7 @@
 <!-- ── auth gate (same credentials as the main mockup) ── -->
 <div id="authGate">
   <div class="auth-card">
-    <div class="brand"><span class="dot"></span>pulseXP</div>
+    <div class="brand"><span class="dot"></span>Hildegard</div>
     <p class="sub">Internal access · authorised testers only</p>
     <form id="authForm" autocomplete="off">
       <div class="auth-field"><label for="authUser">Username</label><input id="authUser" type="text" placeholder="Username" autocomplete="username" required></div>
@@ -351,7 +351,7 @@
     <div>
       <div class="eyebrow">New · Voice playback per test step</div>
       <h1>Let <em>Hildegard</em> explain it.</h1>
-      <p>Experts type a short explanation into any test step. HephAIst turns it into a professional English voice clip. On replay, Hildegard speaks at exactly that step — and pulseXP only moves on once the step <b>and</b> the explanation are finished. Your regression test becomes a training course.</p>
+      <p>Experts type a short explanation into any test step. HephAIst turns it into a professional English voice clip. On replay, Hildegard speaks at exactly that step — and Hildegard only moves on once the step <b>and</b> the explanation are finished. Your regression test becomes a training course.</p>
     </div>
   </div>
   <div class="hintbar">
@@ -376,7 +376,7 @@
         </div>
         <div class="fhead">
           <h2 id="soTitle">Create Sales Order</h2>
-          <div class="sub">Order Type: Standard Order (OR) · Sales Org. 1000 · Plant 1200 · FEAS check by pulseXP / HephAIst</div>
+          <div class="sub">Order Type: Standard Order (OR) · Sales Org. 1000 · Plant 1200 · FEAS check by Hildegard / HephAIst</div>
           <div class="kpis">
             <div class="kpi"><label>Sales Document</label><span id="kDoc">—</span></div>
             <div class="kpi"><label>Item 10 · FEAS status</label><span id="kFeas" class="ostat neutral"><span class="d"></span>Not checked</span></div>
@@ -443,7 +443,7 @@
       <div class="r-debug"><span>'Hildegard' started debugging this browser</span><span class="cancel">Cancel</span><span class="x">✕</span></div>
       <div class="r-header">
         <div class="r-header-top">
-          <span class="r-logo">pulse<sup>XP</sup></span><span class="r-logo-b">Recorder</span>
+          <span class="r-logo">Hildegard</span><span class="r-logo-b">Recorder</span>
           <button class="r-gear" id="openSettings" title="Hildegard voice settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
           <span class="r-account">Demo User <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m2 3.5 3 3 3-3"/></svg></span>
         </div>
@@ -478,7 +478,7 @@
 
   <div class="how">
     <div><span class="k">Author</span><b>Type once, per step</b><p>The explanation lives in the step settings — next to “Take a screenshot” and “Optional step”.</p></div>
-    <div><span class="k">Generate</span><b>HephAIst → MP3</b><p>pulseXP sends the text to HephAIst, which returns a professional English voice clip within seconds.</p></div>
+    <div><span class="k">Generate</span><b>HephAIst → MP3</b><p>Hildegard sends the text to HephAIst, which returns a professional English voice clip within seconds.</p></div>
     <div><span class="k">Share</span><b>Audio travels with the test</b><p>On upload the MP3s are bundled with the <code>.spec.ts</code>. Whoever loads the test case gets Hildegard too.</p></div>
     <div><span class="k">Replay</span><b>Step waits for Hildegard</b><p>In training mode the next step starts only when the action <i>and</i> the explanation have finished.</p></div>
   </div>
@@ -582,7 +582,7 @@ function estSec(t){ const w=(t.trim().match(/\S+/g)||[]).length; return w? Math.
 function chipFor(s){
   const h=s.h;
   if(h.state==='busy') return '<span class="chip busy">Generating…</span>';
-  if(h.state==='err')  return '<span class="chip err" title="'+esc(h.err||'')+'">Voice unavailable – using preview voice</span>';
+  if(h.state==='err')  return '<span class="chip err" title="'+esc(h.err||'')+'">Voice unavailable – try again later</span>';
   if(!h.text.trim())   return '<span class="chip none">Type an explanation</span>';
   if(countWords(h.text)<MIN_WORDS) return '<span class="chip none">Min. '+MIN_WORDS+' words</span>';
   if(h.audioUrl && h.audioText===h.text) return '<span class="chip ready">✓ Voice ready'+(h.dur?' · '+h.dur.toFixed(1)+' s':'')+'</span>';
@@ -702,12 +702,13 @@ async function generate(s){
 
 /* ═════════════ playback of Hilde (audio or browser fallback) ═════════════ */
 let curAudio=null, stopFlag=false, pendingDone=null;
-function stopAudio(){ if(curAudio){ curAudio.pause(); curAudio=null; } try{ speechSynthesis.cancel(); }catch(e){} hideSay(); if(pendingDone){ const d=pendingDone; pendingDone=null; d(); } }
+function stopAudio(){ if(curAudio){ curAudio.pause(); curAudio=null; } hideSay(); if(pendingDone){ const d=pendingDone; pendingDone=null; d(); } }
 
 function speak(s){
   const h=s.h; const text=h.text.trim();
   if(!text || !validWords(text)) return Promise.resolve();
   const fresh = h.audioUrl && h.audioText===h.text;
+  if(!fresh) return Promise.resolve(); // no generated clip -> Hildegard stays silent (no browser voice)
   return new Promise(res=>{
     let finished=false;
     const done=()=>{ if(finished) return; finished=true; if(pendingDone===done) pendingDone=null; stopKaraoke();
@@ -722,19 +723,7 @@ function speak(s){
       a.addEventListener('ended',()=>{ curAudio=null; done(); });
       a.addEventListener('error',()=>{ curAudio=null; done(); });
       a.play().catch(()=>{ curAudio=null; done(); });
-    } else if('speechSynthesis' in window){
-      showSay(text,'Preview voice — press “Generate voice” for the final clip');
-      const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate=1;
-      const v=speechSynthesis.getVoices().find(v=>/en(-|_)(US|GB)/i.test(v.lang)); if(v) u.voice=v;
-      // karaoke: use real word boundaries if the engine reports them, otherwise a time estimate
-      const est=Math.max(1.5,estSec(text)); timeWords(est); K.hopMs=est*1000/K.words.length*.6;
-      const t0=performance.now(); let boundary=false; K.clock=()=>(performance.now()-t0)/1000; karaokeLoop();
-      const offs=[]; { let p=0; K.words.forEach(w=>{ const k=text.indexOf(w,p); offs.push(k); p=k+w.length; }); }
-      u.onboundary=e=>{ if(e.name && e.name!=='word') return; if(!boundary){ boundary=true; K.clock=null; }
-        let i=0; while(i+1<offs.length && offs[i+1]<=e.charIndex) i++; setWord(i); };
-      u.onend=done; u.onerror=done; speechSynthesis.speak(u);
-      setTimeout(done, (est+4)*1000); // safety net
-    } else { showSay(text,''); const est=Math.max(1.5,estSec(text)); timeWords(est); const t0=performance.now(); K.clock=()=>(performance.now()-t0)/1000; karaokeLoop(); setTimeout(done, est*1000); }
+    }
   });
 }
 
@@ -866,11 +855,10 @@ async function replay(){
   if(running) return; running=true; stopFlag=false;
   $('play').disabled=true; $('stop').disabled=false;
   resetSap(); [...stepsEl.children].forEach(c=>c.classList.remove('active','done'));
-  try{ speechSynthesis.getVoices(); }catch(e){}
   for(const s of STEPS){
     if(stopFlag) break;
     const el=stepsEl.children[s.i]; el.classList.add('active'); stepsEl.scrollTo({top: el.offsetTop - stepsEl.offsetTop - 8, behavior:'smooth'});
-    const talk = mode==='train' && s.h.on && validWords(s.h.text);
+    const talk = mode==='train' && s.h.on && validWords(s.h.text) && !!(s.h.audioUrl && s.h.audioText===s.h.text);
     setStatus(`Step ${s.i+1}/${STEPS.length}`+(talk?' · Hildegard is explaining':''));
     // the next step starts only when BOTH the action and Hilde's explanation are finished
     await Promise.all([ perform(s), talk ? speak(s) : Promise.resolve() ]);
