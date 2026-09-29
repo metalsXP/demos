@@ -201,14 +201,6 @@
   .r-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(21,35,49,.16)}
   .r-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;background:#f7f8fa;border-bottom:1px solid #eceef1}
   .r-card-head h4{font-size:1rem;font-weight:700;color:#111}
-  .r-stopbtn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(180deg,#3d5f7c,#5b7d99);color:#fff;font-size:.82rem;font-weight:700;padding:7px 14px;border-radius:8px}
-  .r-stopbtn i{width:13px;height:13px;border:1.8px solid #fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
-  .r-stopbtn i::after{content:"";width:5px;height:5px;border-radius:50%;background:#fff}
-  .r-stopbtn{border:0;cursor:pointer;font-family:inherit;transition:background .2s,color .2s}
-  .r-stopbtn:disabled{background:#eef1f4;color:#5B6B7A;cursor:default}
-  .r-stopbtn:disabled i{border-color:#5B6B7A}.r-stopbtn:disabled i::after{background:#5B6B7A}
-  .r-stopbtn:not(:disabled) i::after{animation:recPulse 1s ease-in-out infinite}
-  @keyframes recPulse{50%{opacity:.25}}
   .r-desc{padding:10px 16px 2px;font-size:.78rem;color:#6b6f75;line-height:1.45}
   .r-sub{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 16px 8px}
   .r-sub b{font-size:.86rem;color:#111}
@@ -350,7 +342,6 @@
 <div id="siteContent" hidden>
 <div class="mockbar">MOCKUP · HildeVoice concept · Simulated recorder & SAP screen · Voice via HephAIst · metalsXP GmbH</div>
 <div class="topnav"><div class="wrap">
-  <div class="brand"><span class="dot"></span>pulseXP <small>HildeVoice</small></div>
   <a href="../">← Back to overview</a>
 </div></div>
 
@@ -460,7 +451,7 @@
       </div>
       <div class="r-body">
         <div class="r-card">
-          <div class="r-card-head"><h4>Record Process</h4><button class="r-stopbtn" id="stopTop" disabled title="Stop replay">Stop <i></i></button></div>
+          <div class="r-card-head"><h4>Record Process</h4></div>
           <div class="r-desc">Record, assert and validate your process here. Every process needs at least one URL navigation.</div>
           <div class="r-sub">
             <b>Steps</b>
@@ -598,6 +589,21 @@ function chipFor(s){
   if(h.audioUrl)       return '<span class="chip stale">Text changed · regenerate</span>';
   return '<span class="chip stale">No voice yet</span>';
 }
+/* Preview plays only the generated clip for the current text (no browser voice) and can be stopped */
+let previewing=null;
+const hasClip = s => !!(s.h.audioUrl && s.h.audioText===s.h.text);
+const canPreview = s => previewing===s || (hasClip(s) && validWords(s.h.text) && s.h.state!=='busy');
+const prevTitle = s => previewing===s ? 'Stop preview' : (hasClip(s) ? 'Play the generated clip' : 'Generate the voice first');
+const prevLabel = s => previewing===s
+  ? '<svg viewBox="0 0 12 12" fill="currentColor"><rect x="2" y="2" width="8" height="8" rx="1"/></svg>Stop'
+  : '<svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z"/></svg>Preview';
+function togglePreview(s){
+  if(previewing===s){ stopAudio(); return; }
+  stopAudio();
+  if(!hasClip(s)) return;
+  previewing=s; renderStep(s);
+  speak(s).then(()=>{ if(previewing===s) previewing=null; renderStep(s); });
+}
 function renderStep(s){
   let el = stepsEl.children[s.i];
   const open = el && el.classList.contains('open');
@@ -623,7 +629,7 @@ function renderStep(s){
           <span class="chipwrap">${chipFor(s)}</span>
           <span class="est">${wordInfo(s.h.text)}</span>
           <span class="hbox-btns">
-            <button class="hbtn prev" data-a="prev" ${validWords(s.h.text)?'':'disabled'}><svg viewBox="0 0 12 12" fill="currentColor"><path d="M3 1.5v9l7.5-4.5z"/></svg>Preview</button>
+            <button class="hbtn prev" data-a="prev" ${canPreview(s)?'':'disabled'} title="${prevTitle(s)}">${prevLabel(s)}</button>
             <button class="hbtn gen" data-a="gen" ${validWords(s.h.text)?'':'disabled'}>Generate voice</button>
           </span>
         </div>
@@ -638,7 +644,8 @@ function renderStep(s){
     el.querySelector('.st-hilde').classList.toggle('on', !!(s.h.on && s.h.text.trim()));
     el.querySelector('.hbox').classList.toggle('show', s.h.on);
     el.querySelector('[data-t="hilde"]').classList.toggle('on', s.h.on);
-    el.querySelectorAll('.hbtn').forEach(b=>b.disabled=!validWords(s.h.text) || s.h.state==='busy');
+    el.querySelector('[data-a="gen"]').disabled = !validWords(s.h.text) || s.h.state==='busy';
+    const pb=el.querySelector('[data-a="prev"]'); pb.disabled=!canPreview(s); pb.title=prevTitle(s); pb.innerHTML=prevLabel(s);
   }
   if(open) el.classList.add('open');
 }
@@ -658,7 +665,7 @@ function wire(el,s){
     }
     s.h.text=ta.value; if(s.h.state==='err') s.h.state='idle'; renderStep(s); updBundle(); });
   el.querySelector('[data-a="gen"]').addEventListener('click',()=>generate(s));
-  el.querySelector('[data-a="prev"]').addEventListener('click',()=>{ stopAudio(); speak(s); });
+  el.querySelector('[data-a="prev"]').addEventListener('click',()=>togglePreview(s));
 }
 function updBundle(){
   const ready = STEPS.filter(s=>s.h.on && validWords(s.h.text) && s.h.audioUrl && s.h.audioText===s.h.text);
@@ -857,7 +864,7 @@ $('mode').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!
 function setStatus(t){ $('status').textContent=t; }
 async function replay(){
   if(running) return; running=true; stopFlag=false;
-  $('play').disabled=true; $('stop').disabled=false; $('stopTop').disabled=false;
+  $('play').disabled=true; $('stop').disabled=false;
   resetSap(); [...stepsEl.children].forEach(c=>c.classList.remove('active','done'));
   try{ speechSynthesis.getVoices(); }catch(e){}
   for(const s of STEPS){
@@ -872,11 +879,10 @@ async function replay(){
   }
   highlight(null); hideSay();
   setStatus(stopFlag ? 'Stopped' : (mode==='train' ? '✓ Passed · training run complete' : '✓ Passed'));
-  running=false; $('play').disabled=false; $('stop').disabled=true; $('stopTop').disabled=true;
+  running=false; $('play').disabled=false; $('stop').disabled=true;
 }
 $('play').addEventListener('click',replay);
 $('stop').addEventListener('click',()=>{ stopFlag=true; stopAudio(); });
-$('stopTop').addEventListener('click',()=>$('stop').click());
 
 /* ═════════════ settings modal ═════════════ */
 function openSettings(msg){ $('sVoice').value=S.voice; $('sTest').textContent=msg||''; $('sTest').style.color='#b35a00'; $('settings').classList.add('show'); }
