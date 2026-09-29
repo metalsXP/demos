@@ -499,8 +499,6 @@
   <div class="mcard">
     <div class="mhead"><img src="hilde.svg" alt=""><div><h3>Hildegard · Voice settings</h3><p>Live generation through HephAIst (Open WebUI)</p></div></div>
     <div class="mbody">
-      <div class="mf"><label for="sUrl">HephAIst server</label><input id="sUrl" value="https://hephaist.ai"><small>Calls <code>POST /api/v1/audio/speech</code></small></div>
-      <div class="mf"><label for="sKey">API key</label><input id="sKey" type="password" placeholder="sk-… (dedicated TTS user)"><small>Kept only in this browser tab (sessionStorage). Never stored in the page or in Git.</small></div>
       <div class="mf"><label for="sVoice">Voice</label>
         <select id="sVoice">
           <option value="en-US-AvaMultilingualNeural">Ava · US · warm (female)</option>
@@ -508,7 +506,7 @@
           <option value="en-GB-SoniaNeural">Sonia · UK · professional (female)</option>
           <option value="en-US-AndrewMultilingualNeural">Andrew · US · calm (male)</option>
         </select></div>
-      <div class="mnote">Mockup note: without a key, steps use the pre-generated clips; edited texts fall back to the browser's built-in voice so the demo always plays.</div>
+      <div class="mnote">Voices are generated live via HephAIst. Pre-generated clips play offline.</div>
       <div class="mtest" id="sTest"></div>
     </div>
     <div class="mfoot"><button class="cx" id="sTestBtn">Test connection</button><button class="cx" id="sClose">Close</button><button class="ok" id="sSave">Save</button></div>
@@ -516,6 +514,7 @@
 </div>
 </div><!-- /siteContent -->
 
+<script src="config.js"></script>
 <script>
 /* ═════════════ auth gate (same user/hash/session key as ../index.html) ═════════════ */
 (function () {
@@ -565,11 +564,20 @@ STEPS.forEach((s,i)=>{
   s.h = { on: !!s.hilde, text: s.hilde||'', audioUrl: s.clip ? PRE+s.clip : null, audioText: s.hilde||'', dur:null, src: s.clip ? 'pre' : null, state:'idle' };
 });
 
-/* ═════════════ settings (sessionStorage only) ═════════════ */
-const S = { url:'https://hephaist.ai', key:'', voice:'en-US-AvaMultilingualNeural' };
-try { Object.assign(S, JSON.parse(sessionStorage.getItem('hildevoice_cfg')||'{}')); } catch(e){}
+/* ═════════════ settings: server + demo key from config.js, only the voice is stored ═════════════ */
+const HV = window.HILDEVOICE || {};
+const SERVER = String(HV.server||'https://hephaist.ai').replace(/\/+$/,''), KEY = String(HV.key||'');
+const S = { voice:'en-US-AvaMultilingualNeural' };
+// older versions stored server/key here – keep only the voice, drop the rest
+try { const old=JSON.parse(sessionStorage.getItem('hildevoice_cfg')||'{}'); if(old && old.voice) S.voice=old.voice; } catch(e){}
 const $ = id => document.getElementById(id);
-function saveCfg(){ try{ sessionStorage.setItem('hildevoice_cfg', JSON.stringify(S)); }catch(e){} }
+function saveCfg(){ try{ sessionStorage.setItem('hildevoice_cfg', JSON.stringify({voice:S.voice})); }catch(e){} }
+saveCfg();
+function speechCall(text, voice){
+  return fetch(SERVER+'/api/v1/audio/speech',{ method:'POST',
+    headers:{'Authorization':'Bearer '+KEY,'Content-Type':'application/json'},
+    body: JSON.stringify({input:text, voice:voice}) });
+}
 
 /* ═════════════ render recorder steps ═════════════ */
 const stepsEl = $('steps');
@@ -583,7 +591,7 @@ function estSec(t){ const w=(t.trim().match(/\S+/g)||[]).length; return w? Math.
 function chipFor(s){
   const h=s.h;
   if(h.state==='busy') return '<span class="chip busy">Generating…</span>';
-  if(h.state==='err')  return '<span class="chip err" title="'+esc(h.err||'')+'">Voice failed</span>';
+  if(h.state==='err')  return '<span class="chip err" title="'+esc(h.err||'')+'">Voice unavailable – using preview voice</span>';
   if(!h.text.trim())   return '<span class="chip none">Type an explanation</span>';
   if(countWords(h.text)<MIN_WORDS) return '<span class="chip none">Min. '+MIN_WORDS+' words</span>';
   if(h.audioUrl && h.audioText===h.text) return '<span class="chip ready">✓ Voice ready'+(h.dur?' · '+h.dur.toFixed(1)+' s':'')+'</span>';
@@ -669,20 +677,17 @@ STEPS.forEach(s=>{ if(s.h.audioUrl){ const a=new Audio(); a.preload='metadata'; 
 /* ═════════════ HephAIst voice generation ═════════════ */
 async function generate(s){
   if(!validWords(s.h.text)) return;
-  if(!S.key){ openSettings('Add a HephAIst API key to generate voices live.'); return; }
   s.h.state='busy'; renderStep(s);
   try{
-    const r = await fetch(S.url.replace(/\/+$/,'')+'/api/v1/audio/speech',{
-      method:'POST', headers:{'Authorization':'Bearer '+S.key,'Content-Type':'application/json'},
-      body: JSON.stringify({input:s.h.text, voice:S.voice})
-    });
-    if(!r.ok){ let d=''; try{ d=(await r.json()).detail; }catch(e){} throw new Error('HTTP '+r.status+(d?' – '+d:'')); }
+    if(!KEY) throw new Error('no demo key configured');
+    const r = await speechCall(s.h.text, S.voice);
+    if(!r.ok) throw new Error('HTTP '+r.status);
     const blob = await r.blob();
     if(s.h.src==='live' && s.h.audioUrl) URL.revokeObjectURL(s.h.audioUrl);
     s.h.audioUrl = URL.createObjectURL(blob); s.h.audioText = s.h.text; s.h.src='live'; s.h.state='idle'; s.h.dur=null;
     const a=new Audio(s.h.audioUrl); a.addEventListener('loadedmetadata',()=>{ if(isFinite(a.duration)){ s.h.dur=a.duration; renderStep(s);} });
   }catch(e){
-    s.h.state='err'; s.h.err = (e && e.message || String(e)) + (e instanceof TypeError ? ' (network/CORS – is the page origin allowed on HephAIst?)' : '');
+    s.h.state='err'; s.h.err = e instanceof TypeError ? 'network/CORS' : (e && e.message || 'error');
     console.warn('[HildeVoice]', s.h.err);
   }
   renderStep(s); updBundle();
@@ -874,17 +879,19 @@ $('stop').addEventListener('click',()=>{ stopFlag=true; stopAudio(); });
 $('stopTop').addEventListener('click',()=>$('stop').click());
 
 /* ═════════════ settings modal ═════════════ */
-function openSettings(msg){ $('sUrl').value=S.url; $('sKey').value=S.key; $('sVoice').value=S.voice; $('sTest').textContent=msg||''; $('sTest').style.color='#b35a00'; $('settings').classList.add('show'); }
+function openSettings(msg){ $('sVoice').value=S.voice; $('sTest').textContent=msg||''; $('sTest').style.color='#b35a00'; $('settings').classList.add('show'); }
 $('openSettings').addEventListener('click',()=>openSettings());
 $('sClose').addEventListener('click',()=>$('settings').classList.remove('show'));
-$('sSave').addEventListener('click',()=>{ S.url=$('sUrl').value.trim()||'https://hephaist.ai'; S.key=$('sKey').value.trim(); S.voice=$('sVoice').value; saveCfg(); $('settings').classList.remove('show'); });
+$('sSave').addEventListener('click',()=>{ S.voice=$('sVoice').value; saveCfg(); $('settings').classList.remove('show'); });
 $('sTestBtn').addEventListener('click',async()=>{
-  const url=$('sUrl').value.trim().replace(/\/+$/,''), key=$('sKey').value.trim(); const t=$('sTest');
+  const t=$('sTest');
   t.style.color='#5B6B7A'; t.textContent='Testing…';
-  try{ const r=await fetch(url+'/api/v1/auths/',{headers:{'Authorization':'Bearer '+key}});
-    if(r.ok){ const me=await r.json(); t.style.color='#56702c'; t.textContent='✓ Connected as '+(me.name||me.email)+' ('+me.role+')'; }
-    else { t.style.color='#b3243c'; t.textContent='✗ HTTP '+r.status+' – check the API key'; } }
-  catch(e){ t.style.color='#b3243c'; t.textContent='✗ Not reachable from this page (network/CORS). The page origin must be allowed on HephAIst.'; }
+  // same call the steps use: a demo key may only reach /audio/speech
+  try{ if(!KEY) throw new Error('no key');
+    const r=await speechCall('Hello, this is Hildegard.', $('sVoice').value);
+    if(r.ok){ const b=await r.blob(); t.style.color='#56702c'; t.textContent='✓ Voice generated ('+Math.round(b.size/1024)+' KB)'; new Audio(URL.createObjectURL(b)).play().catch(()=>{}); }
+    else { t.style.color='#b3243c'; t.textContent='✗ Voice unavailable (HTTP '+r.status+') – pre-generated clips still play'; } }
+  catch(e){ t.style.color='#b3243c'; t.textContent='✗ HephAIst not reachable – pre-generated clips still play'; }
 });
 </script>
 </body>
