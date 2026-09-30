@@ -64,10 +64,13 @@
   .intro h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;color:var(--navy-hero);line-height:1.2}
   .intro h1 em{font-style:normal;color:var(--ds-secondary)}
   .intro p{color:#4a5b6b;font-size:.95rem;margin-top:4px;max-width:820px}
-  .hintbar{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}
-  .hint{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;font-weight:600;background:#fff;border:1px solid #d7dee5;color:#3b4b5b;padding:6px 12px;border-radius:999px}
+  .hintbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0 16px}
+  @media (max-width:1000px){.hintbar{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media (max-width:560px){.hintbar{grid-template-columns:1fr}}
+  .hint{display:flex;align-items:center;gap:7px;min-width:0;font-size:.8rem;font-weight:600;background:#fff;border:1px solid #d7dee5;color:#3b4b5b;padding:6px 12px;border-radius:999px}
   .hint b{color:var(--ds-secondary)}
-  .hint .n{width:18px;height:18px;border-radius:50%;background:var(--ds-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
+  .hint .t{min-width:0;line-height:1.35}
+  .hint .n{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:var(--ds-primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800}
 
   .stage{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:22px;align-items:start;margin-bottom:60px}
   @media (max-width:1100px){.stage{grid-template-columns:1fr}}
@@ -355,10 +358,11 @@
     </div>
   </div>
   <div class="hintbar">
-    <span class="hint"><span class="n">1</span>Open a step with <b>›</b> (step settings)</span>
-    <span class="hint"><span class="n">2</span>Switch on <b>“Let Hildegard explain”</b> and type</span>
-    <span class="hint"><span class="n">3</span><b>Generate voice</b> (HephAIst)</span>
-    <span class="hint"><span class="n">4</span>Press <b>Replay</b> in training mode</span>
+    <span class="hint"><span class="n">1</span><span class="t">Open a step with <b>›</b> (step settings)</span></span>
+    <span class="hint"><span class="n">2</span><span class="t">Switch on <b>“Let Hildegard explain”</b></span></span>
+    <span class="hint"><span class="n">3</span><span class="t"><b>Type</b> the explanation (3–99 words)</span></span>
+    <span class="hint"><span class="n">4</span><span class="t"><b>Generate voice</b> (HephAIst)</span></span>
+    <span class="hint"><span class="n">5</span><span class="t">Press <b>Replay</b> in training mode</span></span>
   </div>
 
   <div class="stage">
