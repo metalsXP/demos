@@ -543,7 +543,7 @@ const STEPS = [
   {k:'fill',  t:"Fill 'Steel Grade' with 'S355MC'", sel:'ui5:role=input[label="Steel Grade"]', target:'fGrade', val:'S355MC',
    hilde:"Now we enter the steel grade that the customer has ordered.", clip:'intro-3.mp3'},
   {k:'fill',  t:"Fill 'Nominal Thickness' with '8.00'", sel:'ui5:role=input[label="Nominal Thickness (mm)"]', target:'fThick', val:'8.00',
-   hilde:"Enter the grade and the nominal thickness. The check confirms that the thickness lies within the permitted range for this hot rolled product.", clip:'feas-2.mp3'},
+   hilde:"Next comes the nominal thickness. The check confirms that it lies within the permitted range for this hot rolled product.", clip:'thickness.mp3'},
   {k:'click', t:"Click 'Run FEAS Check'", sel:'ui5:role=button[text="Run FEAS Check"]', target:'bFeas',
    hilde:"In the sales order item, the system now runs the FEAS check against the requested steel grade and the customer's external specification.", clip:'feas-1.mp3'},
   {k:'assert',t:"Assert all FEAS attributes are 'OK'", sel:'ui5:role=table[title="FEAS Check Result"]', target:'feasTable',
