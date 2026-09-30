@@ -163,7 +163,7 @@
   .hilde-say .av::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:3px solid var(--ds-secondary);opacity:0}
   .hilde-say.talking .av::after{animation:ring 1.4s ease-out infinite}
   @keyframes ring{0%{opacity:.8;transform:scale(.92)}100%{opacity:0;transform:scale(1.25)}}
-  .hilde-say .bubble{flex:1;min-width:0;min-height:var(--say-h,auto);box-sizing:border-box;background:#fff;border-radius:14px 14px 14px 4px;border:1.5px solid var(--color-secondary-light);padding:11px 15px;box-shadow:0 10px 30px rgba(21,35,49,.28);font-size:.88rem;color:#1d2d3e;line-height:1.45}
+  .hilde-say .bubble{background:#fff;border-radius:14px 14px 14px 4px;border:1.5px solid var(--color-secondary-light);padding:11px 15px;box-shadow:0 10px 30px rgba(21,35,49,.28);max-width:640px;font-size:.88rem;color:#1d2d3e;line-height:1.45}
   .hilde-say .who{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ds-secondary);margin-bottom:3px}
   .bars{display:inline-flex;gap:2px;align-items:flex-end;height:11px}
   .bars i{width:3px;background:var(--ds-secondary);border-radius:2px;height:3px}
@@ -736,14 +736,13 @@ const browser=$('browser'), hl=$('hl'), tip=$('tip'), point=$('point');
 /* ═════════════ caption overlay: draggable + karaoke dot ═════════════ */
 let sayMoved=false;
 document.body.appendChild($('say'));
-// default position: exactly on top of the four "how" cards below the demo (page coordinates)
+// default position: directly above the four "how" cards below the demo (page coordinates),
+// bottom edge 12px above the cards so they stay visible
 function placeSay(){
   if(sayMoved) return;
   const el=$('say'), h=document.querySelector('.how').getBoundingClientRect();
-  // the avatar (62px + 12px gap) sits left of the cards so the bubble itself covers all four
-  const av=Math.max(0, Math.min(74, h.left-8));
-  el.style.left=(h.left-av+window.scrollX)+'px'; el.style.top=(h.top+window.scrollY)+'px';
-  el.style.width=(h.width+av)+'px'; el.style.setProperty('--say-h', h.height+'px');
+  el.style.left=(h.left+window.scrollX)+'px'; el.style.width=Math.min(760,h.width)+'px';
+  el.style.top=(h.top+window.scrollY-el.offsetHeight-12)+'px';
 }
 window.addEventListener('resize',()=>{ if(sayMoved){ clampSay(); } else placeSay(); });
 window.addEventListener('load',placeSay);
@@ -803,7 +802,8 @@ function karaokeLoop(){
 }
 function stopKaraoke(){ cancelAnimationFrame(K.raf); K.clock=null; }
 function showSay(text,src){
-  placeSay(); buildKaraoke(text); $('saySrc').textContent=src||''; $('saySrc').style.display=src?'':'none';
+  buildKaraoke(text); $('saySrc').textContent=src||''; $('saySrc').style.display=src?'':'none';
+  placeSay(); // after the text is in, so the height (and thus the offset above the cards) is right
   $('say').classList.add('show','talking');
 }
 function hideSay(){ stopKaraoke(); $('say').classList.remove('show','talking'); }
