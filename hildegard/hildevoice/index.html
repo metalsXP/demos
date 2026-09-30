@@ -144,7 +144,7 @@
   @keyframes pt{0%{opacity:.9;transform:scale(.5)}100%{opacity:0;transform:scale(1.8)}}
 
   /* ── Hilde speaking overlay inside the browser ── */
-  .hilde-say{position:fixed;left:16px;bottom:18px;width:min(760px,calc(100vw - 32px));display:flex;gap:12px;align-items:flex-end;z-index:9500;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s}
+  .hilde-say{position:absolute;left:16px;top:0;width:min(760px,calc(100vw - 32px));display:flex;gap:12px;align-items:flex-end;z-index:9500;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s}
   .hilde-say.show{opacity:1;transform:none}
   .hilde-say.show{pointer-events:auto;cursor:grab}
   .hilde-say.dragging{cursor:grabbing;transition:opacity .3s}
@@ -163,7 +163,7 @@
   .hilde-say .av::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:3px solid var(--ds-secondary);opacity:0}
   .hilde-say.talking .av::after{animation:ring 1.4s ease-out infinite}
   @keyframes ring{0%{opacity:.8;transform:scale(.92)}100%{opacity:0;transform:scale(1.25)}}
-  .hilde-say .bubble{background:#fff;border-radius:14px 14px 14px 4px;border:1.5px solid var(--color-secondary-light);padding:11px 15px;box-shadow:0 10px 30px rgba(21,35,49,.28);max-width:640px;font-size:.88rem;color:#1d2d3e;line-height:1.45}
+  .hilde-say .bubble{flex:1;min-width:0;min-height:var(--say-h,auto);box-sizing:border-box;background:#fff;border-radius:14px 14px 14px 4px;border:1.5px solid var(--color-secondary-light);padding:11px 15px;box-shadow:0 10px 30px rgba(21,35,49,.28);font-size:.88rem;color:#1d2d3e;line-height:1.45}
   .hilde-say .who{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ds-secondary);margin-bottom:3px}
   .bars{display:inline-flex;gap:2px;align-items:flex-end;height:11px}
   .bars i{width:3px;background:var(--ds-secondary);border-radius:2px;height:3px}
@@ -735,24 +735,29 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const browser=$('browser'), hl=$('hl'), tip=$('tip'), point=$('point');
 /* ═════════════ caption overlay: draggable + karaoke dot ═════════════ */
 let sayMoved=false;
+document.body.appendChild($('say'));
+// default position: exactly on top of the four "how" cards below the demo (page coordinates)
 function placeSay(){
   if(sayMoved) return;
-  const r=browser.getBoundingClientRect(), el=$('say');
-  el.style.top=''; el.style.bottom='18px';
-  el.style.left=Math.max(16,r.left+16)+'px'; el.style.width=Math.max(260,Math.min(760,r.width-32))+'px';
+  const el=$('say'), h=document.querySelector('.how').getBoundingClientRect();
+  // the avatar (62px + 12px gap) sits left of the cards so the bubble itself covers all four
+  const av=Math.max(0, Math.min(74, h.left-8));
+  el.style.left=(h.left-av+window.scrollX)+'px'; el.style.top=(h.top+window.scrollY)+'px';
+  el.style.width=(h.width+av)+'px'; el.style.setProperty('--say-h', h.height+'px');
 }
 window.addEventListener('resize',()=>{ if(sayMoved){ clampSay(); } else placeSay(); });
-function clampSay(){
+window.addEventListener('load',placeSay);
+function clampSay(){ // keep a dragged bubble inside the visible part of the page
   const el=$('say'), r=el.getBoundingClientRect();
   const x=Math.min(Math.max(8,r.left), window.innerWidth-r.width-8), y=Math.min(Math.max(8,r.top), window.innerHeight-r.height-8);
-  el.style.left=x+'px'; el.style.top=y+'px'; el.style.bottom='auto';
+  el.style.left=(x+window.scrollX)+'px'; el.style.top=(y+window.scrollY)+'px';
 }
 (function dragSay(){
   const el=$('say'); let sx=0, sy=0, ox=0, oy=0, drag=false;
   el.addEventListener('pointerdown',e=>{
     if(!el.classList.contains('show')) return;
-    const r=el.getBoundingClientRect(); drag=true; sx=e.clientX; sy=e.clientY; ox=r.left; oy=r.top;
-    el.style.top=oy+'px'; el.style.bottom='auto'; el.classList.add('dragging'); el.setPointerCapture(e.pointerId); e.preventDefault();
+    const r=el.getBoundingClientRect(); drag=true; sx=e.clientX; sy=e.clientY; ox=r.left+window.scrollX; oy=r.top+window.scrollY;
+    el.classList.add('dragging'); el.setPointerCapture(e.pointerId); e.preventDefault();
   });
   el.addEventListener('pointermove',e=>{ if(!drag) return; sayMoved=true;
     el.style.left=(ox+e.clientX-sx)+'px'; el.style.top=(oy+e.clientY-sy)+'px'; clampSay(); });
